@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Images - Rayschic</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #d4af37;
+            --dark: #2d3047;
+            --light: #f8f9fa;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--primary);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--dark);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #16213e 100%);
+            padding: 30px 40px;
+            border-bottom: 3px solid var(--secondary);
+        }
+        
+        .header h1 {
+            color: var(--secondary);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #aaa;
+            font-size: 1.1rem;
+        }
+        
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px 40px;
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .stat-card {
+            background: var(--primary);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 30px 40px;
+        }
+        
+        /* Collections Grid */
+        .collections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .collection-card {
+            background: var(--primary);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .collection-card:hover {
+            border-color: var(--secondary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1);
+        }
+        
+        .collection-header {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .collection-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .collection-count {
+            background: var(--secondary);
+            color: var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .collection-images {
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .image-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: background 0.3s;
+        }
+        
+        .image-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .image-preview {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 2px solid var(--secondary);
+        }
+        
+        .image-info {
+            flex: 1;
+        }
+        
+        .image-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        
+        .image-size {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        
+        .image-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary {
+            background: var(--secondary);
+            color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background: #b8941f;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: #000;
+        }
+        
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+        
+        /* Upload Zone */
+        .upload-zone {
+            border: 3px dashed var(--secondary);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin: 30px 0;
+            background: rgba(212, 175, 55, 0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-zone:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-style: solid;
+        }
+        
+        .upload-zone i {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+        
+        .upload-zone h3 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+        
+        /* Actions Bar */
+        .actions-bar {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: var(--dark);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid var(--secondary);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .modal-title {
+            color: var(--secondary);
+            font-size: 1.5rem;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ddd;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary);
+            outline: none;
+        }
+        
+        /* Notifications */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1001;
+            animation: slideIn 0.3s ease-out;
+            max-width: 400px;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .notification.success { background: var(--success); }
+        .notification.error { background: var(--danger); }
+        .notification.warning { background: var(--warning); color: #000; }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--secondary);
+        }
+        
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .collections-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 15px;
+            }
+            
+            .actions-bar {
+                flex-direction: column;
+            }
+            
+            .actions-bar .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+            
+            .image-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .image-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background: linear-gradient(90deg, var(--secondary), #ffd700);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-camera-retro"></i>
+                RAYSCHIC - Admin Python
+            </h1>
+            <p class="subtitle">Système de gestion d'images avancé - Déployé sur Render</p>
+        </div>
+        
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number" id="total-images">0</div>
+                <div class="stat-label">Images Totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="collections-count">0</div>
+                <div class="stat-label">Collections</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="last-update">--:--</div>
+                <div class="stat-label">Dernière mise à jour</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="api-status">✓</div>
+                <div class="stat-label">Statut API</div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Loading -->
+            <div id="loading" class="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Initialisation du système Python...</p>
+            </div>
+            
+            <!-- Collections -->
+            <div id="collections-container" style="display: none;">
+                <h2 style="margin-bottom: 20px; color: var(--secondary);">
+                    <i class="fas fa-folder-open"></i> Gestion des Collections
+                </h2>
+                <div class="collections-grid" id="collections-grid">
+                    <!-- Rempli dynamiquement -->
+                </div>
+            </div>
+            
+            <!-- Upload Zone -->
+            <div class="upload-zone" id="uploadZone">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3>Glissez-déposez vos images ici</h3>
+                <p>ou cliquez pour sélectionner des fichiers</p>
+                <p style="margin-top: 15px; font-size: 0.9rem; color: #aaa;">
+                    Formats acceptés: JPG, PNG, WebP • Max 10MB
+                </p>
+                <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar">0%</div>
+            </div>
+            
+            <!-- Actions Bar -->
+            <div class="actions-bar">
+                <button class="btn btn-primary" onclick="scanImages()">
+                    <i class="fas fa-sync-alt"></i> Actualiser
+                </button>
+                <button class="btn btn-success" onclick="generateJSON()">
+                    <i class="fas fa-file-code"></i> Générer JSON GitHub
+                </button>
+                <button class="btn btn-warning" onclick="showUploadModal()">
+                    <i class="fas fa-plus"></i> Uploader une image
+                </button>
+                <a href="https://rayschic-couture.github.io" target="_blank" class="btn btn-primary">
+                    <i class="fas fa-external-link-alt"></i> Voir le site
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upload Modal -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-upload"></i> Uploader une image
+                </h3>
+                <button class="close-modal" onclick="closeModal('uploadModal')">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="collectionSelect">Collection</label>
+                <select id="collectionSelect" class="form-control">
+                    <option value="costumes">Costumes sur Mesure</option>
+                    <option value="chemises">Chemises sur Mesure</option>
+                    <option value="pantalons">Pantalons sur Mesure</option>
+                    <option value="vestes">Vestes & Blazers</option>
+                    <option value="tenues">Tenues Spécifiques</option>
+                    <option value="accessoires">Accessoires Masculins</option>
+                    <option value="hero">Image Principale (Hero)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="imageFile">Fichier image</label>
+                <input type="file" id="imageFile" class="form-control" accept="image/*">
+                <small style="color: #aaa; display: block; margin-top: 5px;">
+                    JPG, PNG ou WebP - Max 10MB
+                </small>
+            </div>
+            
+            <div class="form-group">
+                <button class="btn btn-success" style="width: 100%;" onclick="uploadFromModal()">
+                    <i class="fas fa-upload"></i> Uploader l'image
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Replace Modal -->
+    <div class="modal" id="replaceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-exchange-alt"></i> Remplacer l'image
+                </h3>
+                <button class="close-modal" onclick="closeModal('replaceModal')">&times;</button>
+            </div>
+            
+            <input type="hidden" id="replaceCollection">
+            <input type="hidden" id="replaceFilename">
+            
+            <div class="form-group">
+                <label>Remplacer: <strong id="currentImageName"></strong></label>
+                <p style="color: #aaa; margin: 10px 0;">
+                    Sélectionnez une nouvelle image pour remplacer celle-ci.
+                </p>
+            </div>
+            
+            <div class="form-group">
+                <label for="replaceFile">Nouvelle image</label>
+                <input type="file" id="replaceFile" class="form-control" accept="image/*">
+            </div>
+            
+            <div class="form-group">
+                <button class="btn btn-warning" style="width: 100%;" onclick="replaceImage()">
+                    <i class="fas fa-exchange-alt"></i> Remplacer
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Area -->
+    <div id="notificationArea"></div>
+    
+    <script>
+    const API_URL = window.location.origin;
+    let currentImages = {};
+    
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Admin Python Rayschic - Initialisation');
+        updateLastUpdateTime();
+        checkAPIStatus();
+        scanImages();
+        setupDragAndDrop();
+    });
+    
+    // Scanner les images
+    async function scanImages() {
+        showLoading(true);
+        
+        try {
+            const response = await fetch(`${API_URL}/api/scan`);
+            const data = await response.json();
+            
+            currentImages = data;
+            updateStats(data);
+            displayCollections(data);
+            showLoading(false);
+            
+            showNotification('Système Python chargé avec succès', 'success');
+        } catch (error) {
+            showLoading(false);
+            showNotification('Erreur de connexion au serveur', 'error');
+            console.error(error);
+        }
+    }
+    
+    // Afficher les collections
+    function displayCollections(data) {
+        const container = document.getElementById('collections-grid');
+        const collectionsContainer = document.getElementById('collections-container');
+        
+        if (!data.collections || Object.keys(data.collections).length === 0) {
+            container.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #aaa;">
+                    <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                    <h3>Aucune image trouvée</h3>
+                    <p>Uploader vos premières images pour commencer</p>
+                </div>
+            `;
+            collectionsContainer.style.display = 'block';
+            return;
+        }
+        
+        let html = '';
+        
+        Object.entries(data.collections).forEach(([key, collection]) => {
+            if (key === 'hero') return;
+            
+            html += `
+                <div class="collection-card">
+                    <div class="collection-header">
+                        <div class="collection-title">
+                            ${collection.title}
+                        </div>
+                        <div class="collection-count">
+                            ${collection.count} image${collection.count !== 1 ? 's' : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="collection-images">
+                        ${collection.images.length > 0 ? 
+                            collection.images.map(img => `
+                                <div class="image-item">
+                                    <img src="${API_URL}${img.url}" 
+                                         class="image-preview" 
+                                         alt="${img.filename}"
+                                         onerror="this.src='https://via.placeholder.com/60x60/2d3047/d4af37?text=IMG'">
+                                    <div class="image-info">
+                                        <div class="image-name">${img.filename}</div>
+                                        <div class="image-size">${formatFileSize(img.size)}</div>
+                                    </div>
+                                    <div class="image-actions">
+                                        <button class="btn btn-warning btn-small" 
+                                                onclick="showReplaceModal('${key}', '${img.filename}')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-danger btn-small" 
+                                                onclick="deleteImage('${key}', '${img.filename}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('') : 
+                            `<div style="text-align: center; color: #aaa; padding: 20px;">
+                                <i class="fas fa-image" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                <p>Aucune image</p>
+                            </div>`
+                        }
+                    </div>
+                    
+                    <div style="padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <button class="btn btn-primary" style="width: 100%;" onclick="uploadToCollection('${key}')">
+                            <i class="fas fa-plus"></i> Ajouter à cette collection
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+        collectionsContainer.style.display = 'block';
+    }
+    
+    // Mettre à jour les stats
+    function updateStats(data) {
+        document.getElementById('total-images').textContent = data.stats.total_images;
+        document.getElementById('collections-count').textContent = data.stats.collections_count;
+        updateLastUpdateTime();
+    }
+    
+    // Vérifier le statut de l'API
+    async function checkAPIStatus() {
+        try {
+            await fetch(`${API_URL}/api/scan`);
+            document.getElementById('api-status').innerHTML = '<i class="fas fa-check"></i>';
+            document.getElementById('api-status').style.color = '#28a745';
+        } catch (error) {
+            document.getElementById('api-status').innerHTML = '<i class="fas fa-times"></i>';
+            document.getElementById('api-status').style.color = '#dc3545';
+        }
+    }
+    
+    // Mettre à jour l'heure
+    function updateLastUpdateTime() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('last-update').textContent = timeStr;
+    }
+    
+    // Formater la taille du fichier
+    function formatFileSize(bytes) {
+        if (!bytes) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Drag & Drop
+    function setupDragAndDrop() {
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        
+        uploadZone.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        // Drag events
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            uploadZone.style.borderColor = '#ffd700';
+            uploadZone.style.background = 'rgba(212, 175, 55, 0.15)';
+        }
+        
+        function unhighlight() {
+            uploadZone.style.borderColor = 'var(--secondary)';
+            uploadZone.style.background = 'rgba(212, 175, 55, 0.05)';
+        }
+        
+        uploadZone.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+    }
+    
+    // Gérer les fichiers sélectionnés
+    function handleFileSelect(e) {
+        const files = e.target.files;
+        handleFiles(files);
+    }
+    
+    async function handleFiles(files) {
+        if (files.length === 0) return;
+        
+        // Demander la collection
+        const collection = prompt(
+            'Dans quelle collection voulez-vous uploader ces images ?\n\n' +
+            'Options: hero, costumes, chemises, pantalons, vestes, tenues, accessoires\n' +
+            'Exemple: costumes'
+        );
+        
+        if (!collection || !['hero', 'costumes', 'chemises', 'pantalons', 'vestes', 'tenues', 'accessoires'].includes(collection.toLowerCase())) {
+            showNotification('Collection invalide', 'error');
+            return;
+        }
+        
+        showProgressBar();
+        
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            await uploadFile(file, collection.toLowerCase());
+            
+            // Mettre à jour la barre de progression
+            const progress = Math.round(((i + 1) / files.length) * 100);
+            updateProgressBar(progress);
+        }
+        
+        hideProgressBar();
+        showNotification(`${files.length} image(s) uploadée(s) avec succès`, 'success');
+        scanImages();
+    }
+    
+    // Uploader un fichier
+    async function uploadFile(file, collection) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('collection', collection);
+        
+        try {
+            const response = await fetch(`${API_URL}/api/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.error || 'Erreur d\'upload');
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('Upload error:', error);
+            showNotification(`Erreur: ${error.message}`, 'error');
+            throw error;
+        }
+    }
+    
+    // Supprimer une image
+    async function deleteImage(collection, filename) {
+        if (!confirm(`Supprimer "${filename}" de la collection ${collection} ?`)) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_URL}/api/delete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    collection: collection,
+                    filename: filename
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                showNotification('Image supprimée avec succès', 'success');
+                scanImages();
+            } else {
+                throw new Error(result.error);
+            }
+        } catch (error) {
+            showNotification(`Erreur: ${error.message}`, 'error');
+        }
+    }
+    
+    // Remplacer une image
+    function showReplaceModal(collection, filename) {
+        document.getElementById('replaceCollection').value = collection;
+        document.getElementById('replaceFilename').value = filename;
+        document.getElementById('currentImageName').textContent = filename;
+        document.getElementById('replaceModal').style.display = 'flex';
+    }
+    
+    async function replaceImage() {
+        const collection = document.getElementById('replaceCollection').value;
+        const filename = document.getElementById('replaceFilename').value;
+        const fileInput = document.getElementById('replaceFile');
+        
+        if (!fileInput.files.length) {
+            showNotification('Sélectionnez une nouvelle image', 'warning');
+            return;
+        }
+        
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('collection', collection);
+        formData.append('filename', filename);
+        
+        try {
+            const response = await fetch(`${API_URL}/api/replace`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                showNotification('Image remplacée avec succès', 'success');
+                closeModal('replaceModal');
+                scanImages();
+            } else {
+                throw new Error(result.error);
+            }
+        } catch (error) {
+            showNotification(`Erreur: ${error.message}`, 'error');
+        }
+    }
+    
+    // Générer le JSON pour GitHub
+    async function generateJSON() {
+        try {
+            showNotification('Génération du fichier JSON...', 'warning');
+            
+            const response = await fetch(`${API_URL}/api/generate-json`);
+            
+            if (!response.ok) {
+                throw new Error('Erreur lors de la génération');
+            }
+            
+            // Créer un blob et télécharger
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'images.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('Fichier JSON généré et téléchargé !', 'success');
+            
+            // Instructions
+            setTimeout(() => {
+                alert(`✅ Fichier images.json généré avec succès !
+
+📁 Pour mettre à jour votre site GitHub :
+
+1. Allez sur : https://github.com/rayschic-couture/rayschic-couture.github.io
+2. Cliquez sur "Add file" → "Upload files"
+3. Glissez-déposez le fichier images.json téléchargé
+4. Remplacez-le dans le dossier data/
+5. Cliquez sur "Commit changes"
+
+Votre site sera mis à jour automatiquement !`);
+            }, 1000);
+            
+        } catch (error) {
+            showNotification(`Erreur: ${error.message}`, 'error');
+        }
+    }
+    
+    // Upload vers une collection spécifique
+    function uploadToCollection(collection) {
+        const modal = document.getElementById('uploadModal');
+        document.getElementById('collectionSelect').value = collection;
+        modal.style.display = 'flex';
+    }
+    
+    // Afficher le modal d'upload
+    function showUploadModal() {
+        document.getElementById('uploadModal').style.display = 'flex';
+    }
+    
+    // Upload depuis le modal
+    async function uploadFromModal() {
+        const collection = document.getElementById('collectionSelect').value;
+        const fileInput = document.getElementById('imageFile');
+        
+        if (!fileInput.files.length) {
+            showNotification('Sélectionnez une image', 'warning');
+            return;
+        }
+        
+        const file = fileInput.files[0];
+        
+        try {
+            const result = await uploadFile(file, collection);
+            showNotification(result.message, 'success');
+            closeModal('uploadModal');
+            scanImages();
+            fileInput.value = ''; // Réinitialiser
+        } catch (error) {
+            // Erreur déjà gérée dans uploadFile
+        }
+    }
+    
+    // Fermer un modal
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+    
+    // Afficher/masquer le loading
+    function showLoading(show) {
+        document.getElementById('loading').style.display = show ? 'block' : 'none';
+        document.getElementById('collections-container').style.display = show ? 'none' : 'block';
+    }
+    
+    // Barre de progression
+    function showProgressBar() {
+        document.getElementById('progressContainer').style.display = 'block';
+    }
+    
+    function updateProgressBar(percent) {
+        const bar = document.getElementById('progressBar');
+        bar.style.width = percent + '%';
+        bar.textContent = percent + '%';
+    }
+    
+    function hideProgressBar() {
+        setTimeout(() => {
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('progressBar').style.width = '0%';
+        }, 1000);
+    }
+    
+    // Notifications
+    function showNotification(message, type = 'info') {
+        const area = document.getElementById('notificationArea');
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                              type === 'error' ? 'exclamation-circle' : 
+                              'info-circle'}"></i>
+            <span>${message}</span>
+            <button onclick="this.parentElement.remove()" 
+                    style="background:none; border:none; color:inherit; margin-left: auto; cursor:pointer;">
+                ×
+            </button>
+        `;
+        
+        area.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+    
+    // Raccourcis clavier
+    document.addEventListener('keydown', function(e) {
+        // Ctrl+R pour rafraîchir
+        if (e.ctrlKey && e.key === 'r') {
+            e.preventDefault();
+            scanImages();
+        }
+        
+        // Ctrl+J pour générer JSON
+        if (e.ctrlKey && e.key === 'j') {
+            e.preventDefault();
+            generateJSON();
+        }
+        
+        // Échap pour fermer les modals
+        if (e.key === 'Escape') {
+            closeModal('uploadModal');
+            closeModal('replaceModal');
+        }
+    });
+    </script>
+</body>
+</html>
