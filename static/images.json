@@ -1,5 +1,38 @@
 {
   "last_updated": "2024-01-01",
-  "hero": {},
-  "collections": {}
+  "hero": {
+    "url": "https://rayschic-python-admin.onrender.com/uploads/hero/hero.jpg"
+  },
+  "collections": {
+    "costumes": {
+      "title": "Costumes sur Mesure",
+      "images": [],
+      "count": 0
+    },
+    "chemises": {
+      "title": "Chemises sur Mesure",
+      "images": [],
+      "count": 0
+    },
+    "pantalons": {
+      "title": "Pantalons sur Mesure",
+      "images": [],
+      "count": 0
+    },
+    "vestes": {
+      "title": "Vestes & Blazers",
+      "images": [],
+      "count": 0
+    },
+    "tenues": {
+      "title": "Tenues Spécifiques",
+      "images": [],
+      "count": 0
+    },
+    "accessoires": {
+      "title": "Accessoires Masculins",
+      "images": [],
+      "count": 0
+    }
+  }
 }
