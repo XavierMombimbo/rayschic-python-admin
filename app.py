@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file, render_template, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 import json
@@ -35,11 +35,93 @@ def allowed_file(filename):
 
 @app.route('/')
 def home():
-    return render_template('admin.html')
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Rayschic Admin</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body { background: #1a1a2e; color: #fff; font-family: sans-serif; padding: 40px; text-align: center; }
+            h1 { color: #d4af37; font-size: 2.5rem; margin-bottom: 10px; }
+            p { color: #aaa; margin-bottom: 30px; }
+            .btn { background: #d4af37; color: #1a1a2e; padding: 15px 30px; border-radius: 8px; text-decoration: none; 
+                   display: inline-block; margin: 10px; font-weight: bold; border: none; cursor: pointer; 
+                   transition: all 0.3s; font-size: 1.1rem; }
+            .btn:hover { background: #b8941f; transform: translateY(-2px); }
+            .container { max-width: 800px; margin: 0 auto; }
+            .card { background: #2d3047; padding: 40px; border-radius: 15px; margin: 40px 0; 
+                    border: 2px solid rgba(212, 175, 55, 0.3); }
+            .api-link { color: #d4af37; text-decoration: none; border-bottom: 1px dashed #d4af37; }
+            code { background: #1a1a2e; padding: 5px 10px; border-radius: 4px; color: #d4af37; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🚀 Rayschic Python Admin</h1>
+            <p>Système de gestion d'images avancé - Déployé sur Render</p>
+            
+            <div class="card">
+                <h2 style="color: #d4af37;">Interface d'Administration</h2>
+                <p>Gérez toutes vos images depuis une interface simple et intuitive</p>
+                
+                <a href="/admin" class="btn">
+                    <span style="font-size: 1.2rem;">👉</span> Accéder à l'Admin Complet
+                </a>
+                
+                <div style="margin-top: 30px; text-align: left;">
+                    <h3>📡 Points d'accès API :</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin: 10px 0;">
+                            <a href="/api/scan" class="api-link">GET /api/scan</a> - Scanner toutes les images
+                        </li>
+                        <li style="margin: 10px 0;">
+                            <a href="/api/generate-json" class="api-link">GET /api/generate-json</a> - Générer JSON pour GitHub
+                        </li>
+                        <li style="margin: 10px 0;">
+                            <code>POST /api/upload</code> - Uploader une nouvelle image
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="color: #666; margin-top: 40px;">
+                <p>URL de votre API : <code id="api-url"></code></p>
+                <p>Votre admin sera automatiquement mis à jour quand vous ajouterez <code>static/admin.html</code></p>
+            </div>
+        </div>
+        
+        <script>
+            document.getElementById('api-url').textContent = window.location.origin;
+            console.log('Rayschic Admin - Prêt !');
+        </script>
+    </body>
+    </html>
+    """
 
 @app.route('/admin')
 def admin():
-    return render_template('admin.html')
+    # Servir directement le fichier HTML depuis static
+    try:
+        with open('static/admin.html', 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head><title>Admin - En préparation</title></head>
+        <body style="background:#1a1a2e; color:#d4af37; padding:40px; text-align:center;">
+            <h1>⏳ Interface Admin en préparation</h1>
+            <p>Le fichier admin.html est en cours de déploiement...</p>
+            <p>En attendant, vous pouvez :</p>
+            <div style="margin: 20px;">
+                <a href="/api/scan" style="color:#d4af37;">• Tester l'API</a><br>
+                <a href="/" style="color:#d4af37;">• Retour à l'accueil</a>
+            </div>
+        </body>
+        </html>
+        """, 404
 
 @app.route('/api/scan', methods=['GET'])
 def scan_images():
@@ -98,10 +180,13 @@ def upload_image():
         if not allowed_file(file.filename):
             return jsonify({'error': 'Format non supporté. Utilisez JPG, PNG ou WebP'}), 400
         
-        if len(file.read()) > MAX_FILE_SIZE:
-            return jsonify({'error': 'Fichier trop volumineux (max 10MB)'}), 400
+        # Vérifier la taille
+        file.seek(0, 2)  # Aller à la fin
+        file_size = file.tell()
+        file.seek(0)  # Retourner au début
         
-        file.seek(0)  # Revenir au début
+        if file_size > MAX_FILE_SIZE:
+            return jsonify({'error': 'Fichier trop volumineux (max 10MB)'}), 400
         
         # Valider la collection
         if collection not in COLLECTIONS:
