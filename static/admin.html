@@ -32,19 +32,131 @@
         .btn-primary:hover { background: #b8941f; transform: translateY(-2px); }
         .btn-success { background: #28a745; color: white; }
         .btn-danger { background: #dc3545; color: white; }
+        .btn-warning { background: #ffc107; color: #212529; }
         .upload-zone { border: 3px dashed var(--secondary); border-radius: 12px; padding: 40px; text-align: center; margin: 30px 0; background: rgba(212, 175, 55, 0.05); cursor: pointer; transition: all 0.3s; }
         .upload-zone:hover { background: rgba(212, 175, 55, 0.1); border-style: solid; }
         .notification { position: fixed; bottom: 20px; right: 20px; padding: 15px 20px; border-radius: 8px; color: white; display: flex; align-items: center; gap: 10px; z-index: 1001; animation: slideIn 0.3s ease-out; max-width: 400px; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         .notification.success { background: #28a745; }
         .notification.error { background: #dc3545; }
+        .notification.warning { background: #ffc107; color: #212529; }
+        .notification.info { background: #17a2b8; }
+        
+        /* Styles pour la collection hero */
+        .hero-collection { 
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(26, 26, 46, 0.9));
+            border-color: var(--secondary);
+        }
+        
+        .hero-header {
+            background: rgba(212, 175, 55, 0.2);
+        }
+        
+        /* Loader */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--secondary);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Collection selector */
+        .collection-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        
+        .collection-option {
+            padding: 10px;
+            background: var(--dark);
+            border: 2px solid transparent;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .collection-option:hover {
+            border-color: var(--secondary);
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .collection-option.active {
+            background: var(--secondary);
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        /* Progress bar */
+        .progress-container {
+            width: 100%;
+            background: var(--primary);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background: linear-gradient(90deg, var(--secondary), #ffd700);
+            width: 0%;
+            transition: width 0.3s;
+            text-align: center;
+            line-height: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        /* Admin info */
+        .admin-info {
+            background: var(--primary);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .admin-info h4 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2rem; }
+            .collections-grid { grid-template-columns: 1fr; }
+            .stats-bar { grid-template-columns: 1fr; }
+            .collection-images { max-height: 200px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-camera-retro"></i> RAYSCHIC - Admin Images</h1>
-            <p>Gestion complète des images - Système Python</p>
+            <p>Gestion complète des images - Système Python sur Render</p>
+            <div class="admin-info">
+                <h4><i class="fas fa-info-circle"></i> Informations système</h4>
+                <p><strong>API URL:</strong> <code id="api-url">https://rayschic-python-admin.onrender.com</code></p>
+                <p><strong>Statut:</strong> <span id="api-status" class="api-status">Vérification...</span></p>
+            </div>
         </div>
         
         <div class="stats-bar">
@@ -57,12 +169,33 @@
                 <div class="stat-label">Collections</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number"><i class="fas fa-check"></i></div>
+                <div class="stat-number" id="api-status-icon"><i class="fas fa-spinner fa-spin"></i></div>
                 <div class="stat-label">Statut API</div>
             </div>
         </div>
         
         <div class="main-content">
+            <!-- Zone de sélection de collection pour upload -->
+            <div id="upload-section" style="display: none;">
+                <h3 style="margin-bottom: 15px; color: var(--secondary);">
+                    <i class="fas fa-upload"></i> Upload vers la collection :
+                </h3>
+                <div class="collection-selector" id="collection-selector">
+                    <div class="collection-option" data-collection="costumes">Costumes</div>
+                    <div class="collection-option" data-collection="chemises">Chemises</div>
+                    <div class="collection-option" data-collection="pantalons">Pantalons</div>
+                    <div class="collection-option" data-collection="vestes">Vestes</div>
+                    <div class="collection-option" data-collection="tenues">Tenues</div>
+                    <div class="collection-option" data-collection="accessoires">Accessoires</div>
+                    <div class="collection-option" data-collection="hero">Hero</div>
+                </div>
+            </div>
+            
+            <!-- Barre de progression -->
+            <div class="progress-container" id="progress-container">
+                <div class="progress-bar" id="progress-bar">0%</div>
+            </div>
+            
             <div id="collections-container">
                 <h2 style="margin-bottom: 20px; color: var(--secondary);">
                     <i class="fas fa-folder-open"></i> Collections d'Images
@@ -73,25 +206,49 @@
             </div>
             
             <div class="upload-zone" id="uploadZone">
-                <i class="fas fa-cloud-upload-alt"></i>
+                <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; margin-bottom: 15px;"></i>
                 <h3>Glissez-déposez vos images ici</h3>
                 <p>ou cliquez pour sélectionner des fichiers</p>
                 <p style="margin-top: 15px; font-size: 0.9rem; color: #aaa;">
-                    Formats: JPG, PNG, WebP • Max 10MB
+                    Formats: JPG, PNG, WebP • Max 10MB par fichier
                 </p>
                 <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-warning" onclick="showCollectionSelector()">
+                        <i class="fas fa-folder-plus"></i> Choisir la collection
+                    </button>
+                </div>
             </div>
             
             <div style="text-align: center; margin-top: 40px;">
-                <button class="btn btn-primary" onclick="scanImages()">
+                <button class="btn btn-primary" onclick="scanImages()" id="scan-btn">
                     <i class="fas fa-sync-alt"></i> Actualiser
                 </button>
-                <button class="btn btn-success" onclick="generateJSON()">
-                    <i class="fas fa-file-code"></i> Générer JSON GitHub
+                <button class="btn btn-success" onclick="generateJSON()" id="generate-btn">
+                    <i class="fas fa-file-code"></i> Générer JSON
+                </button>
+                <button class="btn btn-warning" onclick="optimizeImages()" id="optimize-btn">
+                    <i class="fas fa-compress-alt"></i> Optimiser Images
                 </button>
                 <a href="https://rayschic-couture.github.io" target="_blank" class="btn btn-primary">
                     <i class="fas fa-external-link-alt"></i> Voir le site
                 </a>
+                <button class="btn btn-danger" onclick="clearCache()" id="clear-cache-btn">
+                    <i class="fas fa-trash-alt"></i> Vider le cache
+                </button>
+            </div>
+            
+            <!-- Instructions -->
+            <div style="margin-top: 40px; padding: 20px; background: var(--primary); border-radius: 10px; border-left: 4px solid var(--secondary);">
+                <h4 style="color: var(--secondary); margin-bottom: 10px;">
+                    <i class="fas fa-lightbulb"></i> Instructions rapides
+                </h4>
+                <ol style="margin-left: 20px; line-height: 1.6;">
+                    <li><strong>Pour uploader :</strong> Cliquez sur "Choisir la collection", sélectionnez une collection, puis glissez-déposez ou cliquez pour sélectionner des images</li>
+                    <li><strong>Pour supprimer :</strong> Cliquez sur l'icône corbeille à côté de l'image</li>
+                    <li><strong>Pour mettre à jour le site :</strong> Après upload, cliquez sur "Générer JSON" et uploadez le fichier sur GitHub</li>
+                    <li><strong>Image Hero :</strong> Utilisez la collection "hero" pour l'image principale du site</li>
+                </ol>
             </div>
         </div>
     </div>
@@ -99,23 +256,104 @@
     <div id="notificationArea"></div>
     
     <script>
-    const API_URL = 'https://rayschic-python-admin.onrender.com';
+    const API_URL = window.location.hostname === 'localhost' ? 
+                   'http://localhost:5000' : 
+                   'https://rayschic-python-admin.onrender.com';
+    
+    let selectedCollection = null;
+    let uploadQueue = [];
+    let isUploading = false;
     
     // Initialisation
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Admin Rayschic initialisé');
+        console.log('🌐 API URL:', API_URL);
+        
+        checkAPIStatus();
         scanImages();
         setupDragAndDrop();
+        setupCollectionSelector();
     });
+    
+    // Vérifier le statut de l'API
+    async function checkAPIStatus() {
+        const statusIcon = document.getElementById('api-status-icon');
+        const statusText = document.getElementById('api-status');
+        
+        try {
+            const response = await fetch(`${API_URL}/api/health`, {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
+            }).catch(() => null);
+            
+            if (response && response.ok) {
+                statusIcon.innerHTML = '<i class="fas fa-check" style="color: #28a745;"></i>';
+                statusText.innerHTML = '<span style="color: #28a745;">✅ En ligne</span>';
+                statusText.className = 'api-status online';
+            } else {
+                // Essayer l'endpoint /api/scan
+                const scanResponse = await fetch(`${API_URL}/api/scan`).catch(() => null);
+                if (scanResponse && scanResponse.ok) {
+                    statusIcon.innerHTML = '<i class="fas fa-check" style="color: #28a745;"></i>';
+                    statusText.innerHTML = '<span style="color: #28a745;">✅ En ligne (via scan)</span>';
+                } else {
+                    throw new Error('API non disponible');
+                }
+            }
+        } catch (error) {
+            console.error('❌ API hors ligne:', error);
+            statusIcon.innerHTML = '<i class="fas fa-times" style="color: #dc3545;"></i>';
+            statusText.innerHTML = '<span style="color: #dc3545;">❌ Hors ligne</span>';
+            statusText.className = 'api-status offline';
+            
+            showNotification('L\'API Python semble hors ligne. Vérifiez le serveur Render.', 'error');
+        }
+    }
     
     // Scanner les images
     async function scanImages() {
+        const scanBtn = document.getElementById('scan-btn');
+        const originalHTML = scanBtn.innerHTML;
+        
         try {
+            scanBtn.innerHTML = '<div class="loader"></div> Scanning...';
+            scanBtn.disabled = true;
+            
             const response = await fetch(`${API_URL}/api/scan`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
             const data = await response.json();
             displayCollections(data);
-            showNotification(`${data.stats.total_images} images trouvées`, 'success');
+            
+            // Mettre à jour les statistiques
+            document.getElementById('total-images').textContent = data.stats.total_images;
+            document.getElementById('collections-count').textContent = Object.keys(data.collections).length;
+            
+            showNotification(`${data.stats.total_images} images trouvées dans ${Object.keys(data.collections).length} collections`, 'success');
+            
         } catch (error) {
-            showNotification('Erreur de connexion à l\'API', 'error');
+            console.error('❌ Erreur scan:', error);
+            showNotification(`Erreur de connexion à l'API: ${error.message}`, 'error');
+            
+            // Afficher un message d'erreur dans l'interface
+            document.getElementById('collections-grid').innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #dc3545;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                    <h3>API non disponible</h3>
+                    <p>Impossible de contacter le serveur Python sur Render.</p>
+                    <p style="margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="scanImages()">
+                            <i class="fas fa-redo"></i> Réessayer
+                        </button>
+                    </p>
+                </div>
+            `;
+        } finally {
+            scanBtn.innerHTML = originalHTML;
+            scanBtn.disabled = false;
         }
     }
     
@@ -124,18 +362,83 @@
         const container = document.getElementById('collections-grid');
         let html = '';
         
+        // Afficher hero en premier
+        if (data.collections.hero) {
+            const hero = data.collections.hero;
+            html += `
+                <div class="collection-card hero-collection">
+                    <div class="collection-header hero-header">
+                        <div class="collection-title">
+                            <i class="fas fa-star"></i> ${hero.title || 'Image Hero'}
+                        </div>
+                        <div class="collection-count">${hero.count || hero.images.length} image${hero.count !== 1 ? 's' : ''}</div>
+                    </div>
+                    
+                    <div class="collection-images">
+                        ${hero.images.length > 0 ? 
+                            hero.images.map(img => `
+                                <div class="image-item">
+                                    <img src="${API_URL}${img.url}" 
+                                         class="image-preview" 
+                                         alt="${img.filename}"
+                                         onerror="this.src='https://via.placeholder.com/60x60/2d3047/d4af37?text=HERO'">
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 600; margin-bottom: 5px;">${img.filename}</div>
+                                        <div style="font-size: 0.8rem; color: #aaa;">${formatFileSize(img.size)} • ${img.dimensions || 'N/A'}</div>
+                                    </div>
+                                    <div style="display: flex; gap: 5px;">
+                                        <button class="btn btn-primary" onclick="window.open('${API_URL}${img.url}', '_blank')" title="Voir en grand">
+                                            <i class="fas fa-expand"></i>
+                                        </button>
+                                        <button class="btn btn-danger" onclick="deleteImage('hero', '${img.filename}')" title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('') : 
+                            `<div style="text-align: center; color: #aaa; padding: 20px;">
+                                <i class="fas fa-image" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                <p>Aucune image hero</p>
+                                <p style="font-size: 0.8rem; margin-top: 10px;">Taille recommandée: 1200×800px</p>
+                            </div>`
+                        }
+                    </div>
+                    
+                    <div style="padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                        <button class="btn btn-primary" onclick="selectCollectionForUpload('hero')" style="width: 100%;">
+                            <i class="fas fa-plus"></i> ${hero.images.length > 0 ? 'Remplacer' : 'Ajouter'} l'image Hero
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Afficher les autres collections
         Object.entries(data.collections).forEach(([key, collection]) => {
             if (key === 'hero') return;
+            
+            const titleMap = {
+                costumes: 'Costumes sur Mesure',
+                chemises: 'Chemises sur Mesure',
+                pantalons: 'Pantalons sur Mesure',
+                vestes: 'Vestes & Blazers',
+                tenues: 'Tenues Spécifiques',
+                accessoires: 'Accessoires Masculins'
+            };
+            
+            const collectionTitle = titleMap[key] || collection.title || key;
             
             html += `
                 <div class="collection-card">
                     <div class="collection-header">
-                        <div class="collection-title">${collection.title}</div>
-                        <div class="collection-count">${collection.count} image${collection.count !== 1 ? 's' : ''}</div>
+                        <div class="collection-title">
+                            <i class="fas fa-folder"></i> ${collectionTitle}
+                        </div>
+                        <div class="collection-count">${collection.count || collection.images.length} image${collection.count !== 1 ? 's' : ''}</div>
                     </div>
                     
                     <div class="collection-images">
-                        ${collection.images.length > 0 ? 
+                        ${collection.images && collection.images.length > 0 ? 
                             collection.images.map(img => `
                                 <div class="image-item">
                                     <img src="${API_URL}${img.url}" 
@@ -144,13 +447,16 @@
                                          onerror="this.src='https://via.placeholder.com/60x60/2d3047/d4af37?text=IMG'">
                                     <div style="flex: 1;">
                                         <div style="font-weight: 600; margin-bottom: 5px;">${img.filename}</div>
-                                        <div style="font-size: 0.8rem; color: #aaa;">${formatFileSize(img.size)}</div>
+                                        <div style="font-size: 0.8rem; color: #aaa;">
+                                            ${formatFileSize(img.size)}
+                                            ${img.dimensions ? `• ${img.dimensions}` : ''}
+                                        </div>
                                     </div>
                                     <div style="display: flex; gap: 5px;">
-                                        <button class="btn btn-primary" onclick="uploadToCollection('${key}')">
-                                            <i class="fas fa-edit"></i>
+                                        <button class="btn btn-primary" onclick="window.open('${API_URL}${img.url}', '_blank')" title="Voir en grand">
+                                            <i class="fas fa-expand"></i>
                                         </button>
-                                        <button class="btn btn-danger" onclick="deleteImage('${key}', '${img.filename}')">
+                                        <button class="btn btn-danger" onclick="deleteImage('${key}', '${img.filename}')" title="Supprimer">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -159,12 +465,13 @@
                             `<div style="text-align: center; color: #aaa; padding: 20px;">
                                 <i class="fas fa-image" style="font-size: 2rem; margin-bottom: 10px;"></i>
                                 <p>Aucune image</p>
+                                <p style="font-size: 0.8rem; margin-top: 10px;">Ajoutez des images JPG/PNG</p>
                             </div>`
                         }
                     </div>
                     
                     <div style="padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
-                        <button class="btn btn-primary" onclick="uploadToCollection('${key}')" style="width: 100%;">
+                        <button class="btn btn-primary" onclick="selectCollectionForUpload('${key}')" style="width: 100%;">
                             <i class="fas fa-plus"></i> Ajouter des images
                         </button>
                     </div>
@@ -173,27 +480,68 @@
         });
         
         container.innerHTML = html;
-        document.getElementById('total-images').textContent = data.stats.total_images;
+    }
+    
+    // Configurer le sélecteur de collection
+    function setupCollectionSelector() {
+        const selector = document.getElementById('collection-selector');
+        selector.addEventListener('click', function(e) {
+            if (e.target.classList.contains('collection-option')) {
+                // Retirer la classe active de toutes les options
+                document.querySelectorAll('.collection-option').forEach(option => {
+                    option.classList.remove('active');
+                });
+                
+                // Ajouter la classe active à l'option cliquée
+                e.target.classList.add('active');
+                
+                // Définir la collection sélectionnée
+                selectedCollection = e.target.dataset.collection;
+                
+                showNotification(`Collection sélectionnée: ${selectedCollection}`, 'info');
+                
+                // Activer le champ de fichier
+                document.getElementById('fileInput').click();
+            }
+        });
+    }
+    
+    // Afficher le sélecteur de collection
+    function showCollectionSelector() {
+        const uploadSection = document.getElementById('upload-section');
+        uploadSection.style.display = 'block';
+        
+        // Faire défiler jusqu'au sélecteur
+        uploadSection.scrollIntoView({ behavior: 'smooth' });
+        
+        showNotification('Sélectionnez une collection pour uploader des images', 'info');
+    }
+    
+    // Sélectionner une collection pour upload
+    function selectCollectionForUpload(collection) {
+        selectedCollection = collection;
+        
+        // Mettre à jour l'affichage du sélecteur
+        document.querySelectorAll('.collection-option').forEach(option => {
+            option.classList.remove('active');
+            if (option.dataset.collection === collection) {
+                option.classList.add('active');
+            }
+        });
+        
+        // Afficher la section upload
+        document.getElementById('upload-section').style.display = 'block';
+        
+        // Activer le champ de fichier
+        setTimeout(() => {
+            document.getElementById('fileInput').click();
+        }, 300);
     }
     
     // Upload vers une collection
     async function uploadToCollection(collection) {
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = 'image/*';
-        fileInput.multiple = true;
-        
-        fileInput.onchange = async function(e) {
-            const files = Array.from(e.target.files);
-            
-            for (const file of files) {
-                await uploadFile(file, collection);
-            }
-            
-            scanImages();
-        };
-        
-        fileInput.click();
+        selectedCollection = collection;
+        document.getElementById('fileInput').click();
     }
     
     // Uploader un fichier
@@ -211,18 +559,98 @@
             const result = await response.json();
             
             if (response.ok) {
-                showNotification(`Uploadé: ${result.image.filename}`, 'success');
+                return { success: true, data: result };
             } else {
-                showNotification(`Erreur: ${result.error}`, 'error');
+                return { 
+                    success: false, 
+                    error: result.error || 'Erreur inconnue' 
+                };
             }
         } catch (error) {
-            showNotification('Erreur de connexion', 'error');
+            return { 
+                success: false, 
+                error: 'Erreur de connexion au serveur' 
+            };
         }
+    }
+    
+    // Gérer l'upload multiple
+    async function uploadMultipleFiles(files, collection) {
+        if (!collection) {
+            showNotification('Veuillez d\'abord sélectionner une collection', 'warning');
+            return;
+        }
+        
+        if (files.length === 0) return;
+        
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '0%';
+        progressBar.textContent = '0%';
+        
+        let uploadedCount = 0;
+        let errors = [];
+        
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            
+            // Vérifier la taille du fichier (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                errors.push(`${file.name}: Trop volumineux (>10MB)`);
+                continue;
+            }
+            
+            // Mettre à jour la barre de progression
+            const progress = Math.round((i / files.length) * 100);
+            progressBar.style.width = `${progress}%`;
+            progressBar.textContent = `${progress}%`;
+            
+            showNotification(`Upload de ${file.name}...`, 'info');
+            
+            const result = await uploadFile(file, collection);
+            
+            if (result.success) {
+                uploadedCount++;
+                showNotification(`✓ ${file.name} uploadé avec succès`, 'success');
+            } else {
+                errors.push(`${file.name}: ${result.error}`);
+                showNotification(`✗ Erreur avec ${file.name}: ${result.error}`, 'error');
+            }
+        }
+        
+        // Finaliser la progression
+        progressBar.style.width = '100%';
+        progressBar.textContent = '100%';
+        
+        // Résumé
+        if (uploadedCount > 0) {
+            showNotification(`${uploadedCount} fichier(s) uploadé(s) avec succès dans ${collection}`, 'success');
+            
+            // Recharger les images après un court délai
+            setTimeout(() => {
+                scanImages();
+                progressContainer.style.display = 'none';
+            }, 1000);
+        }
+        
+        if (errors.length > 0) {
+            showNotification(`${errors.length} erreur(s) lors de l'upload`, 'error');
+            console.error('Erreurs upload:', errors);
+        }
+        
+        // Réinitialiser le sélecteur
+        selectedCollection = null;
+        document.getElementById('upload-section').style.display = 'none';
+        document.querySelectorAll('.collection-option').forEach(option => {
+            option.classList.remove('active');
+        });
     }
     
     // Supprimer une image
     async function deleteImage(collection, filename) {
-        if (!confirm(`Supprimer "${filename}" ?`)) return;
+        if (!confirm(`Supprimer "${filename}" de la collection ${collection} ?`)) return;
         
         try {
             const response = await fetch(`${API_URL}/api/delete`, {
@@ -234,20 +662,28 @@
             const result = await response.json();
             
             if (response.ok) {
-                showNotification('Image supprimée', 'success');
-                scanImages();
+                showNotification(`Image "${filename}" supprimée`, 'success');
+                
+                // Recharger les images
+                setTimeout(() => scanImages(), 500);
             } else {
                 showNotification(`Erreur: ${result.error}`, 'error');
             }
         } catch (error) {
-            showNotification('Erreur de connexion', 'error');
+            showNotification('Erreur de connexion au serveur', 'error');
         }
     }
     
     // Générer JSON pour GitHub
     async function generateJSON() {
+        const generateBtn = document.getElementById('generate-btn');
+        const originalHTML = generateBtn.innerHTML;
+        
         try {
-            showNotification('Génération du JSON...', 'info');
+            generateBtn.innerHTML = '<div class="loader"></div> Génération...';
+            generateBtn.disabled = true;
+            
+            showNotification('Génération du JSON en cours...', 'info');
             
             const response = await fetch(`${API_URL}/api/generate-json`);
             
@@ -258,24 +694,86 @@
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'images.json';
+            a.download = 'rayschic-images.json';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
             
             showNotification('JSON généré et téléchargé !', 'success');
             
             // Instructions
-            alert(`✅ Fichier images.json généré !
+            setTimeout(() => {
+                alert(`✅ Fichier rayschic-images.json généré !
 
-📁 Pour mettre à jour votre site :
+📁 Pour mettre à jour votre site GitHub :
+
 1. Allez sur : https://github.com/rayschic-couture/rayschic-couture.github.io
-2. Uploadez ce fichier dans le dossier data/
-3. Commit changes
+2. Cliquez sur "Add file" → "Upload files"
+3. Glissez le fichier "rayschic-images.json" dans la zone
+4. Cliquez sur "Commit changes"
 
-Votre site sera mis à jour !`);
+Le site se mettra à jour automatiquement en quelques minutes !`);
+            }, 1000);
             
         } catch (error) {
+            console.error('❌ Erreur génération JSON:', error);
+            showNotification(`Erreur: ${error.message}`, 'error');
+        } finally {
+            generateBtn.innerHTML = originalHTML;
+            generateBtn.disabled = false;
+        }
+    }
+    
+    // Optimiser les images
+    async function optimizeImages() {
+        const optimizeBtn = document.getElementById('optimize-btn');
+        const originalHTML = optimizeBtn.innerHTML;
+        
+        try {
+            optimizeBtn.innerHTML = '<div class="loader"></div> Optimisation...';
+            optimizeBtn.disabled = true;
+            
+            showNotification('Optimisation des images en cours...', 'info');
+            
+            const response = await fetch(`${API_URL}/api/optimize`, {
+                method: 'POST'
+            });
+            
+            if (!response.ok) throw new Error('Erreur optimisation');
+            
+            const result = await response.json();
+            
+            showNotification(`Images optimisées! ${result.optimized} fichiers traités.`, 'success');
+            
+            // Recharger les images
+            setTimeout(() => scanImages(), 1000);
+            
+        } catch (error) {
+            console.error('❌ Erreur optimisation:', error);
+            showNotification(`Erreur: ${error.message}`, 'error');
+        } finally {
+            optimizeBtn.innerHTML = originalHTML;
+            optimizeBtn.disabled = false;
+        }
+    }
+    
+    // Vider le cache
+    async function clearCache() {
+        try {
+            const response = await fetch(`${API_URL}/api/clear-cache`, {
+                method: 'POST'
+            });
+            
+            if (!response.ok) throw new Error('Erreur cache');
+            
+            showNotification('Cache vidé avec succès', 'success');
+            
+            // Forcer le rechargement des images
+            setTimeout(() => scanImages(), 500);
+            
+        } catch (error) {
+            console.error('❌ Erreur cache:', error);
             showNotification(`Erreur: ${error.message}`, 'error');
         }
     }
@@ -285,78 +783,17 @@ Votre site sera mis à jour !`);
         const uploadZone = document.getElementById('uploadZone');
         const fileInput = document.getElementById('fileInput');
         
-        uploadZone.addEventListener('click', () => fileInput.click());
+        uploadZone.addEventListener('click', () => {
+            if (!selectedCollection) {
+                showCollectionSelector();
+                return;
+            }
+            fileInput.click();
+        });
         
         fileInput.addEventListener('change', (e) => {
             const files = Array.from(e.target.files);
-            handleFiles(files);
-        });
-        
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
-            uploadZone.addEventListener(event, preventDefaults, false);
-        });
-        
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        
-        ['dragenter', 'dragover'].forEach(event => {
-            uploadZone.addEventListener(event, () => {
-                uploadZone.style.borderColor = '#ffd700';
-                uploadZone.style.background = 'rgba(212, 175, 55, 0.15)';
-            }, false);
-        });
-        
-        ['dragleave', 'drop'].forEach(event => {
-            uploadZone.addEventListener(event, () => {
-                uploadZone.style.borderColor = 'var(--secondary)';
-                uploadZone.style.background = 'rgba(212, 175, 55, 0.05)';
-            }, false);
-        });
-        
-        uploadZone.addEventListener('drop', (e) => {
-            const files = Array.from(e.dataTransfer.files);
-            handleFiles(files);
-        }, false);
-    }
-    
-    async function handleFiles(files) {
-        if (files.length === 0) return;
-        
-        const collection = prompt('Collection (costumes, chemises, etc.):');
-        if (!collection) return;
-        
-        for (const file of files) {
-            await uploadFile(file, collection);
-        }
-        
-        scanImages();
-    }
-    
-    // Formater la taille
-    function formatFileSize(bytes) {
-        if (!bytes) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-    
-    // Notifications
-    function showNotification(message, type = 'info') {
-        const area = document.getElementById('notificationArea');
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-            <span>${message}</span>
-            <button onclick="this.parentElement.remove()" style="background:none; border:none; color:inherit; margin-left: auto; cursor:pointer;">×</button>
-        `;
-        
-        area.appendChild(notification);
-        setTimeout(() => notification.remove(), 5000);
-    }
-    </script>
-</body>
-</html>
+            if (files.length > 0 && selectedCollection) {
+                uploadMultipleFiles(files, selectedCollection);
+            }
+            //
