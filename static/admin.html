@@ -467,9 +467,9 @@
         <div class="header">
             <h1>
                 <i class="fas fa-camera-retro"></i>
-                RAYSCHIC - Gestionnaire d'Images
+                RAYSCHIC - Admin Python
             </h1>
-            <p class="subtitle">Uploader, organiser et synchroniser vos images pour le site web</p>
+            <p class="subtitle">Système de gestion d'images avancé - Déployé sur Render</p>
         </div>
         
         <!-- Stats Bar -->
@@ -497,13 +497,13 @@
             <!-- Loading -->
             <div id="loading" class="loading">
                 <i class="fas fa-spinner fa-spin"></i>
-                <p>Chargement des images...</p>
+                <p>Initialisation du système Python...</p>
             </div>
             
             <!-- Collections -->
             <div id="collections-container" style="display: none;">
                 <h2 style="margin-bottom: 20px; color: var(--secondary);">
-                    <i class="fas fa-folder-open"></i> Collections d'Images
+                    <i class="fas fa-folder-open"></i> Gestion des Collections
                 </h2>
                 <div class="collections-grid" id="collections-grid">
                     <!-- Rempli dynamiquement -->
@@ -537,7 +537,7 @@
                 <button class="btn btn-warning" onclick="showUploadModal()">
                     <i class="fas fa-plus"></i> Uploader une image
                 </button>
-                <a href="/" target="_blank" class="btn btn-primary">
+                <a href="https://rayschic-couture.github.io" target="_blank" class="btn btn-primary">
                     <i class="fas fa-external-link-alt"></i> Voir le site
                 </a>
             </div>
@@ -625,6 +625,7 @@
     
     // Initialisation
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('Admin Python Rayschic - Initialisation');
         updateLastUpdateTime();
         checkAPIStatus();
         scanImages();
@@ -644,7 +645,7 @@
             displayCollections(data);
             showLoading(false);
             
-            showNotification('Images chargées avec succès', 'success');
+            showNotification('Système Python chargé avec succès', 'success');
         } catch (error) {
             showLoading(false);
             showNotification('Erreur de connexion au serveur', 'error');
@@ -672,6 +673,8 @@
         let html = '';
         
         Object.entries(data.collections).forEach(([key, collection]) => {
+            if (key === 'hero') return;
+            
             html += `
                 <div class="collection-card">
                     <div class="collection-header">
@@ -737,7 +740,7 @@
     // Vérifier le statut de l'API
     async function checkAPIStatus() {
         try {
-            await fetch(`${API_URL}/api/collections`);
+            await fetch(`${API_URL}/api/scan`);
             document.getElementById('api-status').innerHTML = '<i class="fas fa-check"></i>';
             document.getElementById('api-status').style.color = '#28a745';
         } catch (error) {
@@ -755,7 +758,7 @@
     
     // Formater la taille du fichier
     function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
+        if (!bytes) return '0 Bytes';
         const k = 1024;
         const sizes = ['Bytes', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -979,7 +982,8 @@
 1. Allez sur : https://github.com/rayschic-couture/rayschic-couture.github.io
 2. Cliquez sur "Add file" → "Upload files"
 3. Glissez-déposez le fichier images.json téléchargé
-4. Cliquez sur "Commit changes"
+4. Remplacez-le dans le dossier data/
+5. Cliquez sur "Commit changes"
 
 Votre site sera mis à jour automatiquement !`);
             }, 1000);
