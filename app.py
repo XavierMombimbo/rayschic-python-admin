@@ -1,182 +1,281 @@
-from flask import Flask, jsonify, send_from_directory
 import os
+import json
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+from werkzeug.utils import secure_filename
+from datetime import datetime
+import hashlib
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='')
+CORS(app)
 
 # Configuration
 UPLOAD_FOLDER = 'uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
-# Collections
-COLLECTIONS = {
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
+
+# Créer les dossiers s'ils n'existent pas
+COLLECTIONS = ['hero', 'costumes', 'chemises', 'pantalons', 'vestes', 'tenues', 'accessoires']
+for collection in COLLECTIONS:
+    os.makedirs(os.path.join(UPLOAD_FOLDER, collection), exist_ok=True)
+
+# Titres des collections
+COLLECTION_TITLES = {
+    'hero': 'Image Principale',
     'costumes': 'Costumes sur Mesure',
-    'chemises': 'Chemises sur Mesure', 
+    'chemises': 'Chemises sur Mesure',
     'pantalons': 'Pantalons sur Mesure',
     'vestes': 'Vestes & Blazers',
     'tenues': 'Tenues Spécifiques',
-    'accessoires': 'Accessoires Masculins',
-    'hero': 'Image Principale'
+    'accessoires': 'Accessoires Masculins'
 }
 
-# Créer les dossiers
-for folder in COLLECTIONS.keys():
-    os.makedirs(os.path.join(UPLOAD_FOLDER, folder), exist_ok=True)
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/')
-def home():
-    return '''
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Rayschic Admin - EN LIGNE</title>
-        <style>
-            body { 
-                background: #1a1a2e; 
-                color: white; 
-                font-family: sans-serif; 
-                padding: 40px; 
-                text-align: center; 
-                margin: 0;
-            }
-            h1 { 
-                color: #d4af37; 
-                font-size: 2.5rem; 
-                margin-bottom: 10px;
-            }
-            .btn { 
-                background: #d4af37; 
-                color: #1a1a2e; 
-                padding: 12px 24px; 
-                border-radius: 8px; 
-                text-decoration: none; 
-                display: inline-block; 
-                margin: 10px; 
-                font-weight: bold;
-                font-size: 1.1rem;
-            }
-            .container { 
-                max-width: 800px; 
-                margin: 0 auto; 
-            }
-            .card { 
-                background: #2d3047; 
-                padding: 30px; 
-                border-radius: 15px; 
-                margin: 30px 0; 
-                border: 2px solid #d4af37;
-            }
-            .success { 
-                color: #4CAF50; 
-                font-weight: bold;
-                font-size: 1.2rem;
-            }
-            code {
-                background: rgba(0,0,0,0.3);
-                padding: 4px 8px;
-                border-radius: 4px;
-                color: #d4af37;
-                font-family: monospace;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>✅ RAYSCHIC ADMIN PYTHON</h1>
-            <p class="success">SYSTÈME EN LIGNE ET FONCTIONNEL</p>
-            
-            <div class="card">
-                <h2>🎯 Votre API est opérationnelle</h2>
-                <p>Le système Python a été déployé avec succès sur Render.com</p>
-                
-                <div style="margin: 25px 0;">
-                    <a class="btn" href="/api/scan">
-                        📡 Tester l'API maintenant
-                    </a>
-                    <a class="btn" href="https://rayschic-couture.github.io" target="_blank">
-                        🌐 Voir le site principal
-                    </a>
-                </div>
-                
-                <div style="text-align: left; background: #1a1a2e; padding: 20px; border-radius: 10px; margin-top: 20px;">
-                    <h3>🔗 Votre URL API :</h3>
-                    <p><code id="api-url">Chargement...</code></p>
-                    
-                    <h3>📋 Endpoints disponibles :</h3>
-                    <ul>
-                        <li><code>GET /api/scan</code> - Scanner les images</li>
-                        <li><code>POST /api/upload</code> - Uploader une image</li>
-                        <li><code>GET /api/generate-json</code> - Générer JSON</li>
-                        <li><code>GET /uploads/[collection]/[image]</code> - Accéder aux images</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div style="color: #666; margin-top: 40px;">
-                <p><strong>Prochaine étape :</strong> Mettre à jour votre site principal pour utiliser cette API</p>
-                <p>URL de votre service : <code>https://rayschic-python-admin.onrender.com</code></p>
-            </div>
-        </div>
-        
-        <script>
-            // Afficher l'URL actuelle
-            document.getElementById('api-url').textContent = window.location.origin;
-            
-            // Tester automatiquement l'API
-            fetch('/api/scan')
-                .then(response => response.json())
-                .then(data => {
-                    console.log('✅ API fonctionnelle :', data);
-                    // Ajouter un badge de confirmation
-                    const title = document.querySelector('h1');
-                    title.innerHTML = '✅ RAYSCHIC ADMIN PYTHON <span style="color:#4CAF50; font-size:1rem;">(API OK)</span>';
-                })
-                .catch(error => {
-                    console.log('⚠️ Test API :', error);
-                });
-        </script>
-    </body>
-    </html>
-    '''
-
-@app.route('/api/scan')
-def scan():
-    """Scanner toutes les images"""
-    result = {
-        'collections': {},
-        'stats': {'total_images': 0, 'collections_count': len(COLLECTIONS)}
-    }
+def scan_uploads():
+    """Scanner tous les dossiers d'upload"""
+    collections = {}
+    total_images = 0
     
-    for folder, title in COLLECTIONS.items():
-        folder_path = os.path.join(UPLOAD_FOLDER, folder)
+    for collection in COLLECTIONS:
+        collection_path = os.path.join(UPLOAD_FOLDER, collection)
         images = []
         
-        if os.path.exists(folder_path):
-            for filename in os.listdir(folder_path):
-                if filename.lower().endswith(('.jpg', '.jpeg', '.png', '.webp')):
-                    filepath = os.path.join(folder_path, filename)
+        if os.path.exists(collection_path):
+            for filename in os.listdir(collection_path):
+                if allowed_file(filename):
+                    filepath = os.path.join(collection_path, filename)
                     if os.path.isfile(filepath):
-                        stat = os.stat(filepath)
-                        images.append({
-                            'filename': filename,
-                            'url': f'/uploads/{folder}/{filename}',
-                            'size': stat.st_size
-                        })
+                        try:
+                            size = os.path.getsize(filepath)
+                            images.append({
+                                'filename': filename,
+                                'url': f'/uploads/{collection}/{filename}',
+                                'size': size,
+                                'uploaded_at': datetime.fromtimestamp(os.path.getctime(filepath)).isoformat()
+                            })
+                        except:
+                            continue
         
-        result['collections'][folder] = {
-            'title': title,
+        collections[collection] = {
+            'title': COLLECTION_TITLES.get(collection, collection),
             'images': images,
             'count': len(images)
         }
-        result['stats']['total_images'] += len(images)
+        total_images += len(images)
     
-    return jsonify(result)
+    return {
+        'collections': collections,
+        'stats': {
+            'total_images': total_images,
+            'collections_count': len(collections),
+            'last_updated': datetime.now().isoformat()
+        }
+    }
 
-@app.route('/uploads/<path:path>')
-def serve_uploads(path):
-    """Servir les images uploadées"""
-    return send_from_directory(UPLOAD_FOLDER, path)
+@app.route('/api/scan', methods=['GET'])
+def api_scan():
+    """API: Scanner toutes les images"""
+    try:
+        data = scan_uploads()
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/upload', methods=['POST'])
+def api_upload():
+    """API: Uploader une image"""
+    try:
+        # Vérifier si les champs sont présents
+        if 'file' not in request.files:
+            return jsonify({'error': 'Aucun fichier fourni'}), 400
+        
+        if 'collection' not in request.form:
+            return jsonify({'error': 'Collection non spécifiée'}), 400
+        
+        file = request.files['file']
+        collection = request.form['collection']
+        
+        # Vérifier la collection
+        if collection not in COLLECTIONS:
+            return jsonify({'error': f'Collection invalide. Options: {", ".join(COLLECTIONS)}'}), 400
+        
+        # Vérifier le fichier
+        if file.filename == '':
+            return jsonify({'error': 'Nom de fichier vide'}), 400
+        
+        if not allowed_file(file.filename):
+            return jsonify({'error': f'Type de fichier non autorisé. Types autorisés: {", ".join(ALLOWED_EXTENSIONS)}'}), 400
+        
+        # Sécuriser le nom de fichier
+        original_filename = secure_filename(file.filename)
+        filename = original_filename
+        
+        # Vérifier si le fichier existe déjà, ajouter un suffixe si nécessaire
+        counter = 1
+        name, ext = os.path.splitext(original_filename)
+        upload_path = os.path.join(app.config['UPLOAD_FOLDER'], collection)
+        
+        while os.path.exists(os.path.join(upload_path, filename)):
+            filename = f"{name}_{counter}{ext}"
+            counter += 1
+        
+        # Sauvegarder le fichier
+        file_path = os.path.join(upload_path, filename)
+        file.save(file_path)
+        
+        # Obtenir les informations du fichier
+        size = os.path.getsize(file_path)
+        
+        # Réponse
+        image_data = {
+            'filename': filename,
+            'url': f'/uploads/{collection}/{filename}',
+            'size': size,
+            'uploaded_at': datetime.now().isoformat(),
+            'collection': collection
+        }
+        
+        return jsonify({
+            'success': True,
+            'message': 'Fichier uploadé avec succès',
+            'image': image_data
+        })
+        
+    except Exception as e:
+        print(f"Upload error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/delete', methods=['POST'])
+def api_delete():
+    """API: Supprimer une image"""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'error': 'Données JSON requises'}), 400
+        
+        collection = data.get('collection')
+        filename = data.get('filename')
+        
+        if not collection or not filename:
+            return jsonify({'error': 'Collection et nom de fichier requis'}), 400
+        
+        # Vérifier la collection
+        if collection not in COLLECTIONS:
+            return jsonify({'error': 'Collection invalide'}), 400
+        
+        # Sécuriser le nom de fichier
+        safe_filename = secure_filename(filename)
+        
+        # Chemin du fichier
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], collection, safe_filename)
+        
+        # Vérifier si le fichier existe
+        if not os.path.exists(file_path):
+            return jsonify({'error': 'Fichier non trouvé'}), 404
+        
+        # Supprimer le fichier
+        os.remove(file_path)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Fichier supprimé avec succès'
+        })
+        
+    except Exception as e:
+        print(f"Delete error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/generate-json', methods=['GET'])
+def api_generate_json():
+    """API: Générer le JSON pour GitHub"""
+    try:
+        data = scan_uploads()
+        
+        # Formater pour GitHub
+        github_data = {
+            'last_updated': datetime.now().isoformat(),
+            'hero': {
+                'url': data['collections']['hero']['images'][0]['url'] if data['collections']['hero']['images'] else ''
+            },
+            'collections': {}
+        }
+        
+        for key, collection in data['collections'].items():
+            if key == 'hero':
+                continue
+            
+            github_data['collections'][key] = {
+                'title': collection['title'],
+                'images': collection['images'],
+                'count': collection['count']
+            }
+        
+        # Créer la réponse
+        response = jsonify(github_data)
+        response.headers.add('Content-Disposition', 'attachment; filename=images.json')
+        
+        return response
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/health', methods=['GET'])
+def api_health():
+    """API: Vérifier la santé du serveur"""
+    return jsonify({
+        'status': 'online',
+        'timestamp': datetime.now().isoformat(),
+        'collections': COLLECTIONS,
+        'upload_folder': UPLOAD_FOLDER
+    })
+
+@app.route('/api/clear-cache', methods=['POST'])
+def api_clear_cache():
+    """API: Nettoyer le cache (placeholder)"""
+    return jsonify({
+        'success': True,
+        'message': 'Cache nettoyé (fonctionnalité de placeholder)'
+    })
+
+@app.route('/api/optimize', methods=['POST'])
+def api_optimize():
+    """API: Optimiser les images (placeholder)"""
+    return jsonify({
+        'success': True,
+        'message': 'Optimisation (fonctionnalité de placeholder)',
+        'optimized': 0
+    })
+
+# Servir les fichiers uploadés
+@app.route('/uploads/<collection>/<filename>')
+def serve_uploaded_file(collection, filename):
+    return send_from_directory(os.path.join(UPLOAD_FOLDER, collection), filename)
+
+# Route pour l'admin
+@app.route('/admin')
+def serve_admin():
+    return send_from_directory('static', 'admin.html')
+
+# Route racine
+@app.route('/')
+def index():
+    return jsonify({
+        'name': 'Rayschic Image Admin API',
+        'version': '1.0.0',
+        'endpoints': {
+            '/api/scan': 'GET - Scanner les images',
+            '/api/upload': 'POST - Uploader une image',
+            '/api/delete': 'POST - Supprimer une image',
+            '/api/generate-json': 'GET - Générer JSON pour GitHub',
+            '/api/health': 'GET - Vérifier la santé du serveur'
+        }
+    })
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
-
+    app.run(host='0.0.0.0', port=5000, debug=True)
