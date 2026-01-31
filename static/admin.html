@@ -2,47 +2,193 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Admin Images - Rayschic</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Styles optimisés */
-        :root { --primary: #1a1a2e; --secondary: #d4af37; --dark: #2d3047; --light: #f8f9fa; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--primary); color: var(--light); min-height: 100vh; padding: 20px; }
-        .container { max-width: 1400px; margin: 0 auto; background: var(--dark); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        /* ========== VARIABLES RESPONSIVE ========== */
+        :root { 
+            --primary: #1a1a2e; 
+            --secondary: #d4af37; 
+            --dark: #2d3047; 
+            --light: #f8f9fa;
+            --mobile-breakpoint: 768px;
+            --tablet-breakpoint: 1024px;
+        }
         
-        .header { background: linear-gradient(135deg, var(--primary) 0%, #16213e 100%); padding: 20px 30px; border-bottom: 3px solid var(--secondary); }
-        .header h1 { color: var(--secondary); font-size: 2rem; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+        }
         
-        .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; padding: 15px 30px; background: rgba(255,255,255,0.05); }
-        .stat-card { background: var(--primary); padding: 15px; border-radius: 8px; text-align: center; border-left: 4px solid var(--secondary); }
-        .stat-number { font-size: 2rem; font-weight: bold; color: var(--secondary); }
+        /* ========== BASE RESPONSIVE ========== */
+        body { 
+            background: var(--primary); 
+            color: var(--light); 
+            min-height: 100vh; 
+            padding: 15px 10px;
+            font-size: 16px;
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+        }
         
-        .main-content { padding: 20px 30px; }
+        /* Container adaptatif */
+        .container { 
+            max-width: 100%;
+            margin: 0 auto; 
+            background: var(--dark); 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
         
-        /* Sections */
-        .section { margin-bottom: 30px; }
-        .section-title { color: var(--secondary); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        /* ========== HEADER RESPONSIVE ========== */
+        .header { 
+            background: linear-gradient(135deg, var(--primary) 0%, #16213e 100%); 
+            padding: clamp(15px, 4vw, 25px) clamp(15px, 3vw, 30px); 
+            border-bottom: 3px solid var(--secondary); 
+        }
         
-        /* Upload zone */
+        .header h1 { 
+            color: var(--secondary); 
+            font-size: clamp(1.5rem, 5vw, 2.2rem); 
+            margin-bottom: 8px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .header p {
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            color: #ccc;
+            line-height: 1.4;
+        }
+        
+        /* ========== STATS BAR RESPONSIVE ========== */
+        .stats-bar { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); 
+            gap: 12px; 
+            padding: 15px clamp(15px, 3vw, 25px); 
+            background: rgba(255,255,255,0.05); 
+        }
+        
+        .stat-card { 
+            background: var(--primary); 
+            padding: clamp(12px, 3vw, 18px); 
+            border-radius: 8px; 
+            text-align: center; 
+            border-left: 4px solid var(--secondary); 
+        }
+        
+        .stat-number { 
+            font-size: clamp(1.5rem, 6vw, 2.2rem); 
+            font-weight: bold; 
+            color: var(--secondary); 
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: clamp(0.8rem, 3vw, 0.95rem);
+            color: #aaa;
+        }
+        
+        /* ========== MAIN CONTENT RESPONSIVE ========== */
+        .main-content { 
+            padding: clamp(15px, 3vw, 25px) clamp(15px, 3vw, 25px); 
+        }
+        
+        .section { 
+            margin-bottom: clamp(25px, 5vw, 35px); 
+        }
+        
+        .section-title { 
+            color: var(--secondary); 
+            margin-bottom: clamp(12px, 3vw, 18px); 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+        }
+        
+        /* ========== UPLOAD ZONE RESPONSIVE ========== */
         .upload-zone { 
             border: 3px dashed var(--secondary); 
             border-radius: 10px; 
-            padding: 25px; 
+            padding: clamp(20px, 4vw, 30px); 
             text-align: center; 
-            margin: 15px 0; 
+            margin: clamp(15px, 3vw, 20px) 0; 
             background: rgba(212, 175, 55, 0.05); 
             cursor: pointer; 
-            transition: all 0.3s; 
+            transition: all 0.3s;
+            touch-action: manipulation;
         }
-        .upload-zone:hover { background: rgba(212, 175, 55, 0.1); border-style: solid; }
         
-        /* Collections grid */
+        .upload-zone:hover, .upload-zone:active { 
+            background: rgba(212, 175, 55, 0.1); 
+            border-style: solid; 
+        }
+        
+        .upload-zone i.fa-cloud-upload-alt {
+            font-size: clamp(2rem, 8vw, 3rem);
+            margin-bottom: 12px;
+            color: var(--secondary);
+        }
+        
+        /* ========== COLLECTION SELECTOR RESPONSIVE ========== */
+        .collection-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(110px, 100%), 1fr));
+            gap: 10px;
+            margin: clamp(15px, 3vw, 20px) 0;
+            padding: clamp(12px, 3vw, 18px);
+            background: var(--primary);
+            border-radius: 8px;
+        }
+        
+        .collection-option {
+            padding: clamp(10px, 2.5vw, 14px) 8px;
+            background: var(--dark);
+            border: 2px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-size: clamp(0.85rem, 3vw, 1rem);
+            touch-action: manipulation;
+            user-select: none;
+            min-height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .collection-option:hover, .collection-option:active {
+            border-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .collection-option.active {
+            background: var(--secondary);
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .collection-option i {
+            font-size: clamp(1rem, 4vw, 1.3rem);
+        }
+        
+        /* ========== COLLECTIONS GRID RESPONSIVE ========== */
         .collections-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+            gap: clamp(15px, 3vw, 20px);
             margin-top: 15px;
         }
         
@@ -61,7 +207,7 @@
         
         .collection-header {
             background: rgba(212, 175, 55, 0.1);
-            padding: 15px;
+            padding: clamp(12px, 3vw, 18px);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -73,6 +219,9 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
+            flex: 1;
+            min-width: 0;
         }
         
         .collection-count {
@@ -81,20 +230,39 @@
             padding: 4px 10px;
             border-radius: 20px;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+            white-space: nowrap;
+            margin-left: 10px;
         }
         
         .collection-images {
-            padding: 15px;
+            padding: clamp(12px, 3vw, 18px);
             max-height: 300px;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
+        /* Scrollbar personnalisée pour mobile */
+        .collection-images::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .collection-images::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
+        }
+        
+        .collection-images::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 3px;
+        }
+        
+        /* ========== IMAGE ITEM RESPONSIVE ========== */
         .image-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px;
+            gap: clamp(8px, 2vw, 12px);
+            padding: clamp(8px, 2vw, 12px);
             background: rgba(255,255,255,0.05);
             border-radius: 6px;
             margin-bottom: 8px;
@@ -106,21 +274,23 @@
         }
         
         .image-preview {
-            width: 50px;
-            height: 50px;
+            width: clamp(45px, 10vw, 60px);
+            height: clamp(45px, 10vw, 60px);
             object-fit: cover;
             border-radius: 5px;
             border: 2px solid var(--secondary);
+            flex-shrink: 0;
         }
         
         .image-info {
             flex: 1;
             min-width: 0;
+            overflow: hidden;
         }
         
         .image-name {
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: clamp(0.8rem, 3vw, 0.95rem);
             margin-bottom: 3px;
             white-space: nowrap;
             overflow: hidden;
@@ -128,125 +298,314 @@
         }
         
         .image-size {
-            font-size: 0.8rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.85rem);
             color: #aaa;
         }
         
-        /* Boutons */
+        /* ========== BOUTONS RESPONSIVE ========== */
         .btn { 
-            padding: 8px 16px; 
+            padding: clamp(10px, 2.5vw, 14px) clamp(15px, 3vw, 20px); 
             border: none; 
-            border-radius: 6px; 
+            border-radius: 8px; 
             cursor: pointer; 
             font-weight: 600; 
             display: inline-flex; 
             align-items: center; 
-            gap: 6px; 
+            justify-content: center;
+            gap: 8px; 
             transition: all 0.3s; 
-            font-size: 0.9rem;
+            font-size: clamp(0.9rem, 3vw, 1.05rem);
+            touch-action: manipulation;
+            min-height: 48px;
+            text-decoration: none;
+            user-select: none;
         }
-        .btn-primary { background: var(--secondary); color: var(--primary); }
-        .btn-primary:hover { background: #b8941f; transform: translateY(-2px); }
-        .btn-success { background: #28a745; color: white; }
-        .btn-danger { background: #dc3545; color: white; }
-        .btn-danger:hover { background: #c82333; transform: translateY(-2px); }
-        .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
         
-        /* Collection selector */
-        .collection-selector {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        .btn:hover, .btn:active {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .btn-primary { 
+            background: var(--secondary); 
+            color: var(--primary); 
+        }
+        .btn-primary:hover, .btn-primary:active { 
+            background: #b8941f; 
+        }
+        
+        .btn-success { 
+            background: #28a745; 
+            color: white; 
+        }
+        .btn-success:hover, .btn-success:active { 
+            background: #218838; 
+        }
+        
+        .btn-danger { 
+            background: #dc3545; 
+            color: white; 
+        }
+        .btn-danger:hover, .btn-danger:active { 
+            background: #c82333; 
+        }
+        
+        .btn-sm { 
+            padding: 6px 10px; 
+            font-size: clamp(0.75rem, 2.5vw, 0.85rem);
+            min-height: 36px;
+        }
+        
+        /* ========== ACTIONS BAR RESPONSIVE ========== */
+        .actions-bar {
+            display: flex;
+            flex-wrap: wrap;
             gap: 10px;
-            margin: 15px 0;
-            padding: 15px;
-            background: var(--primary);
-            border-radius: 8px;
+            justify-content: center;
+            margin: clamp(20px, 4vw, 30px) 0;
         }
         
-        .collection-option {
-            padding: 10px;
-            background: var(--dark);
-            border: 2px solid transparent;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s;
+        .actions-bar .btn {
+            flex: 1;
+            min-width: min(150px, 100%);
+            max-width: 100%;
         }
         
-        .collection-option:hover {
-            border-color: var(--secondary);
-        }
-        
-        .collection-option.active {
-            background: var(--secondary);
-            color: var(--primary);
-            font-weight: bold;
-        }
-        
-        /* Notification */
+        /* ========== NOTIFICATION RESPONSIVE ========== */
         .notification { 
             position: fixed; 
             bottom: 20px; 
-            right: 20px; 
-            padding: 15px 20px; 
+            right: 10px; 
+            left: 10px;
+            padding: 15px; 
             border-radius: 8px; 
             color: white; 
             display: flex; 
             align-items: center; 
-            gap: 10px; 
+            gap: 12px; 
             z-index: 1001; 
             animation: slideIn 0.3s ease-out; 
-            max-width: 400px; 
+            max-width: 100%;
             background: #28a745;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            font-size: clamp(0.9rem, 3vw, 1rem);
+        }
+        
+        @media (min-width: 480px) {
+            .notification {
+                right: 20px;
+                left: auto;
+                max-width: 400px;
+            }
         }
         
         .notification.error { background: #dc3545; }
         .notification.warning { background: #ffc107; color: #212529; }
         .notification.info { background: #17a2b8; }
         
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideIn { 
+            from { transform: translateY(100%); opacity: 0; } 
+            to { transform: translateY(0); opacity: 1; } 
+        }
         
-        /* Empty state */
+        /* ========== EMPTY STATE ========== */
         .empty-state {
             text-align: center;
-            padding: 30px;
+            padding: clamp(25px, 6vw, 40px) 20px;
             color: #aaa;
         }
         
         .empty-state i {
-            font-size: 3rem;
+            font-size: clamp(2.5rem, 10vw, 4rem);
             margin-bottom: 15px;
             opacity: 0.5;
         }
         
-        /* Actions bar */
-        .actions-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin: 20px 0;
+        .empty-state p {
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
+            margin-bottom: 10px;
         }
         
-        /* Responsive */
+        /* ========== INSTRUCTIONS ========== */
+        .instructions {
+            background: var(--primary);
+            padding: clamp(15px, 3vw, 20px);
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary);
+            margin-top: clamp(20px, 4vw, 30px);
+            font-size: clamp(0.9rem, 3vw, 1rem);
+        }
+        
+        .instructions h4 {
+            color: var(--secondary);
+            margin-bottom: 12px;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            color: #ccc;
+            line-height: 1.6;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            padding-left: 5px;
+        }
+        
+        /* ========== UTILITAIRES MOBILE ========== */
+        .mobile-only { display: none; }
+        .desktop-only { display: block; }
+        
         @media (max-width: 768px) {
-            .collections-grid { grid-template-columns: 1fr; }
-            .collection-selector { grid-template-columns: repeat(3, 1fr); }
+            .mobile-only { display: block; }
+            .desktop-only { display: none; }
+            
+            body {
+                padding: 10px 8px;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .collection-images {
+                max-height: 250px;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .actions-bar {
+                flex-direction: column;
+            }
+            
+            .actions-bar .btn {
+                width: 100%;
+            }
+        }
+        
+        /* Petit mobile (portrait) */
+        @media (max-width: 480px) {
+            .collection-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .collections-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header h1 {
+                justify-content: center;
+                text-align: center;
+            }
+            
+            .header p {
+                text-align: center;
+            }
+        }
+        
+        /* Très petit mobile */
+        @media (max-width: 360px) {
+            .collection-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .collection-option {
+                min-height: 45px;
+                padding: 10px;
+            }
+        }
+        
+        /* Tablet */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                max-width: 95%;
+            }
+            
+            .collections-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Desktop */
+        @media (min-width: 1025px) {
+            .container {
+                max-width: 1400px;
+            }
+        }
+        
+        /* ========== AMÉLIORATIONS TOUCH ========== */
+        button, .btn, .collection-option, .upload-zone {
+            -webkit-tap-highlight-color: rgba(212, 175, 55, 0.3);
+            outline: none;
+        }
+        
+        button:active, .btn:active, .collection-option:active {
+            transform: scale(0.98);
+        }
+        
+        /* Empêcher le zoom sur les inputs */
+        input[type="file"] {
+            font-size: 16px; /* Empêche le zoom sur iOS */
+        }
+        
+        /* Amélioration de la lisibilité sur mobile */
+        @media (max-width: 768px) {
+            .collection-title, .section-title, .header h1 {
+                font-weight: 600;
+            }
+            
+            .image-name {
+                font-weight: 500;
+            }
+        }
+        
+        /* Support du mode sombre natif */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --light: #f8f9fa;
+                --dark: #2d3047;
+            }
+        }
+        
+        /* Amélioration du focus pour accessibilité */
+        button:focus-visible, 
+        .btn:focus-visible, 
+        .collection-option:focus-visible {
+            outline: 2px solid var(--secondary);
+            outline-offset: 2px;
+        }
+        
+        /* Optimisation des transitions pour mobile */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- HEADER -->
         <div class="header">
             <h1><i class="fas fa-camera-retro"></i> RAYSCHIC - Admin Images</h1>
-            <p>Gestion complète des images - Système Python sur Render</p>
+            <p>Gestion complète des images - Optimisé pour mobile</p>
+            <div class="mobile-only" style="margin-top: 10px; font-size: 0.9rem; color: #d4af37;">
+                <i class="fas fa-mobile-alt"></i> Version mobile activée
+            </div>
         </div>
         
+        <!-- STATS -->
         <div class="stats-bar">
             <div class="stat-card">
                 <div class="stat-number" id="total-images">0</div>
-                <div class="stat-label">Images Totales</div>
+                <div class="stat-label">Images</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="collections-count">7</div>
@@ -254,112 +613,422 @@
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="api-status-icon">?</div>
-                <div class="stat-label">Statut API</div>
+                <div class="stat-label">Statut</div>
             </div>
         </div>
         
+        <!-- MAIN CONTENT -->
         <div class="main-content">
-            <!-- SECTION 1: UPLOAD -->
+            <!-- SECTION UPLOAD -->
             <div class="section">
-                <h3 class="section-title"><i class="fas fa-cloud-upload-alt"></i> Uploader des images</h3>
+                <h3 class="section-title"><i class="fas fa-cloud-upload-alt"></i> Uploader</h3>
                 
                 <div class="upload-zone" id="uploadZone">
-                    <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; margin-bottom: 10px; color: var(--secondary);"></i>
-                    <h4 style="margin-bottom: 10px;">Glissez-déposez ou cliquez</h4>
-                    <p style="margin-bottom: 15px; color: #ccc;">Sélectionnez d'abord une collection :</p>
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h4 style="margin-bottom: 8px; font-size: clamp(1.1rem, 4vw, 1.3rem);">Glissez ou cliquez</h4>
+                    <p style="margin-bottom: 12px; color: #ccc; font-size: clamp(0.9rem, 3vw, 1rem);">
+                        Sélectionnez d'abord une collection :
+                    </p>
                     
                     <div class="collection-selector" id="collectionSelector">
                         <div class="collection-option" data-collection="hero">
-                            <i class="fas fa-star"></i> Hero
+                            <i class="fas fa-star"></i>
+                            <span>Hero</span>
                         </div>
                         <div class="collection-option" data-collection="costumes">
-                            <i class="fas fa-user-tie"></i> Costumes
+                            <i class="fas fa-user-tie"></i>
+                            <span>Costumes</span>
                         </div>
                         <div class="collection-option" data-collection="chemises">
-                            <i class="fas fa-tshirt"></i> Chemises
+                            <i class="fas fa-tshirt"></i>
+                            <span>Chemises</span>
                         </div>
                         <div class="collection-option" data-collection="pantalons">
-                            <i class="fas fa-vest"></i> Pantalons
+                            <i class="fas fa-vest"></i>
+                            <span>Pantalons</span>
                         </div>
                         <div class="collection-option" data-collection="vestes">
-                            <i class="fas fa-jacket"></i> Vestes
+                            <i class="fas fa-jacket"></i>
+                            <span>Vestes</span>
                         </div>
                         <div class="collection-option" data-collection="tenues">
-                            <i class="fas fa-vest-patches"></i> Tenues
+                            <i class="fas fa-vest-patches"></i>
+                            <span>Tenues</span>
                         </div>
                         <div class="collection-option" data-collection="accessoires">
-                            <i class="fas fa-bowling-ball"></i> Accessoires
+                            <i class="fas fa-bowling-ball"></i>
+                            <span>Accessoires</span>
                         </div>
                     </div>
                     
                     <div style="margin-top: 20px;">
-                        <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 10px;">
-                            <i class="fas fa-info-circle"></i> Formats: JPG, PNG, WebP • Max 10MB
+                        <p style="color: #aaa; font-size: clamp(0.8rem, 2.5vw, 0.9rem); margin-bottom: 8px;">
+                            <i class="fas fa-info-circle"></i> JPG, PNG • Max 10MB
                         </p>
                         <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+                        <div class="mobile-only" style="margin-top: 10px;">
+                            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()" 
+                                    style="width: 100%; padding: 12px;">
+                                <i class="fas fa-folder-open"></i> Parcourir les fichiers
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- SECTION 2: COLLECTIONS EXISTANTES -->
+            <!-- SECTION COLLECTIONS -->
             <div class="section">
                 <h3 class="section-title"><i class="fas fa-images"></i> Images existantes</h3>
-                <p style="color: #aaa; margin-bottom: 15px;">Gérez vos images uploadées</p>
+                <p style="color: #aaa; margin-bottom: 15px; font-size: clamp(0.9rem, 3vw, 1rem);">
+                    Gérez vos images uploadées
+                </p>
                 
                 <div id="collectionsContainer">
-                    <!-- Les collections seront chargées ici dynamiquement -->
                     <div class="empty-state">
                         <i class="fas fa-image"></i>
-                        <p>Aucune image n'a été uploadée</p>
-                        <p style="font-size: 0.9rem; margin-top: 10px;">Commencez par uploader des images ci-dessus</p>
+                        <p>Aucune image uploadée</p>
+                        <p style="font-size: clamp(0.8rem, 2.5vw, 0.9rem); margin-top: 8px;">
+                            Commencez par uploader des images
+                        </p>
                     </div>
                 </div>
             </div>
             
-            <!-- SECTION 3: ACTIONS -->
+            <!-- SECTION ACTIONS -->
             <div class="section">
-                <h3 class="section-title"><i class="fas fa-cogs"></i> Actions système</h3>
+                <h3 class="section-title"><i class="fas fa-cogs"></i> Actions</h3>
                 
                 <div class="actions-bar">
                     <button class="btn btn-primary" onclick="scanImages()">
-                        <i class="fas fa-sync-alt"></i> Actualiser tout
+                        <i class="fas fa-sync-alt"></i> Actualiser
                     </button>
                     <button class="btn btn-success" onclick="generateJSON()">
-                        <i class="fas fa-file-code"></i> Générer JSON GitHub
+                        <i class="fas fa-file-code"></i> Générer JSON
                     </button>
-                    <button class="btn btn-primary" onclick="clearAllImages()" id="clearAllBtn">
+                    <button class="btn btn-danger" onclick="clearAllImages()" id="clearAllBtn">
                         <i class="fas fa-trash-alt"></i> Tout supprimer
                     </button>
                     <a href="https://rayschic-couture.github.io" target="_blank" class="btn btn-primary">
                         <i class="fas fa-external-link-alt"></i> Voir le site
                     </a>
                 </div>
+                
+                <div class="mobile-only" style="text-align: center; margin-top: 15px;">
+                    <button class="btn btn-primary" onclick="showMobileHelp()" 
+                            style="background: #2d3047; border: 2px solid var(--secondary);">
+                        <i class="fas fa-question-circle"></i> Aide mobile
+                    </button>
+                </div>
+            </div>
+            
+            <!-- INSTRUCTIONS -->
+            <div class="instructions">
+                <h4><i class="fas fa-lightbulb"></i> Guide rapide mobile :</h4>
+                <ol>
+                    <li><strong>Tapotez</strong> une collection pour la sélectionner</li>
+                    <li><strong>Tapotez</strong> la zone bleue pour choisir des photos</li>
+                    <li><strong>Glissez</strong> vers le bas pour rafraîchir la liste</li>
+                    <li><strong>Tapotez longuement</strong> sur une image pour options</li>
+                </ol>
             </div>
         </div>
     </div>
     
-    <!-- Notification Area -->
+    <!-- NOTIFICATION AREA -->
     <div id="notificationArea"></div>
     
-    <!-- JavaScript COMPLET avec gestion des images -->
+    <!-- SCRIPT RESPONSIVE -->
     <script>
-    // Configuration
+    // ========== CONFIGURATION ==========
     const API_URL = window.location.origin;
     let selectedCollection = null;
     let allCollections = {};
+    let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
-    console.log('🚀 Admin Rayschic initialisé');
-    console.log('🌐 API URL:', API_URL);
+    console.log('📱 Admin Responsive initialisé');
+    console.log('📱 Mobile:', isMobile);
+    console.log('🌐 API:', API_URL);
     
-    // Initialisation
+    // ========== INITIALISATION ==========
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('📱 DOM chargé');
+        console.log('✅ DOM chargé');
+        
+        // Optimisations mobile
+        if (isMobile) {
+            setupMobileOptimizations();
+        }
+        
         setupEventListeners();
         checkAPIStatus();
-        scanImages(); // Charger les images au démarrage
+        scanImages();
+        
+        // Détecter le swipe down pour refresh
+        setupPullToRefresh();
     });
     
-    // Vérifier le statut de l'API
+    // ========== OPTIMISATIONS MOBILE ==========
+    function setupMobileOptimizations() {
+        console.log('📱 Optimisations mobile activées');
+        
+        // Empêcher le zoom sur les inputs
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.type === 'file') {
+                e.target.style.fontSize = '16px';
+            }
+        }, { passive: true });
+        
+        // Améliorer les performances sur scroll
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.classList.contains('collection-images')) {
+                e.stopPropagation();
+            }
+        }, { passive: true });
+        
+        // Ajouter un indicateur de chargement pour mobile
+        const loader = document.createElement('div');
+        loader.id = 'mobile-loader';
+        loader.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--secondary);
+            z-index: 10000;
+            transform: translateX(-100%);
+            display: none;
+        `;
+        document.body.appendChild(loader);
+    }
+    
+    function showMobileLoader() {
+        if (!isMobile) return;
+        const loader = document.getElementById('mobile-loader');
+        loader.style.display = 'block';
+        loader.style.transform = 'translateX(-100%)';
+        loader.style.transition = 'transform 0.3s ease';
+        setTimeout(() => {
+            loader.style.transform = 'translateX(0%)';
+        }, 10);
+    }
+    
+    function hideMobileLoader() {
+        if (!isMobile) return;
+        const loader = document.getElementById('mobile-loader');
+        loader.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            loader.style.display = 'none';
+        }, 300);
+    }
+    
+    // ========== PULL TO REFRESH ==========
+    function setupPullToRefresh() {
+        if (!isMobile) return;
+        
+        let startY = 0;
+        let currentY = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].pageY;
+            }
+        }, { passive: true });
+        
+        document.addEventListener('touchmove', function(e) {
+            currentY = e.touches[0].pageY;
+            const diff = currentY - startY;
+            
+            if (window.scrollY === 0 && diff > 50) {
+                e.preventDefault();
+                showNotification('↻ Relâchez pour actualiser', 'info');
+            }
+        }, { passive: false });
+        
+        document.addEventListener('touchend', function(e) {
+            const diff = currentY - startY;
+            
+            if (window.scrollY === 0 && diff > 100) {
+                scanImages();
+                showNotification('Actualisation...', 'info');
+            }
+            
+            startY = 0;
+            currentY = 0;
+        }, { passive: true });
+    }
+    
+    // ========== AIDE MOBILE ==========
+    function showMobileHelp() {
+        alert(`📱 GUIDE MOBILE RAYSCHIC :
+
+✅ COMMENT UPLOADER :
+1. Tapotez une collection (ex: "Costumes")
+2. Tapotez "Parcourir les fichiers"
+3. Sélectionnez vos photos
+4. Attendez la confirmation
+
+✅ COMMENT SUPPRIMER :
+• Tapotez 🗑️ à côté d'une image
+• Confirmez la suppression
+
+✅ GESTURES :
+↓ Glissez vers le bas = Actualiser
+↔ Glissez horizontalement = Défiler
+👆 Tapotez longuement = Options
+
+✅ CONSEILS :
+• Utilisez le mode paysage pour plus d'espace
+• Photos recommandées : moins de 5MB
+• WiFi recommandé pour les uploads`);
+    }
+    
+    // ========== GESTION DES ÉVÉNEMENTS ==========
+    function setupEventListeners() {
+        console.log('🔧 Configuration des événements');
+        
+        // Sélection de collection avec support touch
+        document.querySelectorAll('.collection-option').forEach(option => {
+            // Click pour desktop
+            option.addEventListener('click', handleCollectionSelect);
+            
+            // Touch pour mobile
+            option.addEventListener('touchstart', function(e) {
+                if (isMobile) {
+                    e.preventDefault();
+                    this.style.transform = 'scale(0.95)';
+                }
+            }, { passive: false });
+            
+            option.addEventListener('touchend', function(e) {
+                if (isMobile) {
+                    e.preventDefault();
+                    this.style.transform = '';
+                    handleCollectionSelect.call(this, e);
+                }
+            }, { passive: false });
+        });
+        
+        // Zone d'upload
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        
+        // Desktop click
+        uploadZone.addEventListener('click', function() {
+            handleUploadClick();
+        });
+        
+        // Mobile touch
+        uploadZone.addEventListener('touchstart', function(e) {
+            if (isMobile) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.98)';
+            }
+        }, { passive: false });
+        
+        uploadZone.addEventListener('touchend', function(e) {
+            if (isMobile) {
+                e.preventDefault();
+                this.style.transform = '';
+                handleUploadClick();
+            }
+        }, { passive: false });
+        
+        // Sélection de fichier
+        fileInput.addEventListener('change', function(e) {
+            handleFileSelect(e);
+        });
+        
+        // Drag & drop optimisé
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        uploadZone.addEventListener('drop', function(e) {
+            if (!selectedCollection) {
+                showNotification('Sélectionnez d\'abord une collection', 'warning');
+                return;
+            }
+            
+            const files = Array.from(e.dataTransfer.files);
+            if (files.length > 0) {
+                uploadFiles(files, selectedCollection);
+            }
+        });
+        
+        // Boutons avec feedback tactile
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener(isMobile ? 'touchstart' : 'mousedown', function() {
+                this.style.transform = 'scale(0.97)';
+            });
+            
+            btn.addEventListener(isMobile ? 'touchend' : 'mouseup', function() {
+                this.style.transform = '';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+    }
+    
+    function handleCollectionSelect(e) {
+        const collection = this.dataset.collection;
+        console.log('📁 Collection sélectionnée:', collection);
+        
+        // Retirer la classe active
+        document.querySelectorAll('.collection-option').forEach(opt => {
+            opt.classList.remove('active');
+        });
+        
+        // Ajouter la classe active
+        this.classList.add('active');
+        selectedCollection = collection;
+        
+        // Feedback haptique sur mobile
+        if (isMobile && navigator.vibrate) {
+            navigator.vibrate(20);
+        }
+        
+        showNotification(`${collection} sélectionné`, 'info');
+    }
+    
+    function handleUploadClick() {
+        if (!selectedCollection) {
+            showNotification('Sélectionnez d\'abord une collection', 'warning');
+            return;
+        }
+        
+        // Feedback mobile
+        if (isMobile && navigator.vibrate) {
+            navigator.vibrate(10);
+        }
+        
+        document.getElementById('fileInput').click();
+    }
+    
+    function handleFileSelect(e) {
+        const files = Array.from(e.target.files);
+        
+        if (!selectedCollection) {
+            showNotification('Sélectionnez d\'abord une collection', 'warning');
+            return;
+        }
+        
+        if (files.length > 0) {
+            if (isMobile && files.length > 10) {
+                showNotification('Limite : 10 images max sur mobile', 'warning');
+                files = files.slice(0, 10);
+            }
+            uploadFiles(files, selectedCollection);
+        }
+    }
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    // ========== FONCTIONS PRINCIPALES ==========
     async function checkAPIStatus() {
         try {
             const response = await fetch(API_URL);
@@ -368,158 +1037,50 @@
             }
         } catch (error) {
             document.getElementById('api-status-icon').innerHTML = '<i class="fas fa-times" style="color: #dc3545;"></i>';
-            showNotification('API non disponible', 'error');
         }
     }
     
-    // Configurer les événements
-    function setupEventListeners() {
-        console.log('🔧 Configuration des événements');
-        
-        // Sélection de collection pour upload
-        document.querySelectorAll('.collection-option').forEach(option => {
-            option.addEventListener('click', function() {
-                console.log('📁 Collection cliquée:', this.dataset.collection);
-                
-                // Retirer la classe active de toutes les options
-                document.querySelectorAll('.collection-option').forEach(opt => {
-                    opt.classList.remove('active');
-                });
-                
-                // Ajouter la classe active à l'option cliquée
-                this.classList.add('active');
-                
-                // Définir la collection sélectionnée
-                selectedCollection = this.dataset.collection;
-                
-                showNotification(`Collection sélectionnée: ${selectedCollection}`, 'info');
-            });
-        });
-        
-        // Zone d'upload
-        const uploadZone = document.getElementById('uploadZone');
-        const fileInput = document.getElementById('fileInput');
-        
-        uploadZone.addEventListener('click', function(e) {
-            console.log('📤 Zone d\'upload cliquée');
-            
-            if (!selectedCollection) {
-                showNotification('Veuillez d\'abord sélectionner une collection', 'warning');
-                return;
-            }
-            
-            // Déclencher le sélecteur de fichier
-            fileInput.click();
-        });
-        
-        // Sélection de fichier
-        fileInput.addEventListener('change', function(e) {
-            console.log('📄 Fichiers sélectionnés:', e.target.files.length);
-            
-            if (!selectedCollection) {
-                showNotification('Veuillez d\'abord sélectionner une collection', 'warning');
-                return;
-            }
-            
-            const files = Array.from(e.target.files);
-            if (files.length > 0) {
-                uploadFiles(files, selectedCollection);
-            }
-        });
-        
-        // Drag & drop
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadZone.addEventListener(eventName, preventDefaults, false);
-        });
-        
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        
-        ['dragenter', 'dragover'].forEach(eventName => {
-            uploadZone.addEventListener(eventName, highlight, false);
-        });
-        
-        ['dragleave', 'drop'].forEach(eventName => {
-            uploadZone.addEventListener(eventName, unhighlight, false);
-        });
-        
-        function highlight() {
-            uploadZone.style.background = 'rgba(212, 175, 55, 0.15)';
-        }
-        
-        function unhighlight() {
-            uploadZone.style.background = 'rgba(212, 175, 55, 0.05)';
-        }
-        
-        uploadZone.addEventListener('drop', function(e) {
-            console.log('📂 Fichiers déposés');
-            const files = Array.from(e.dataTransfer.files);
-            
-            if (!selectedCollection) {
-                showNotification('Veuillez d\'abord sélectionner une collection', 'warning');
-                return;
-            }
-            
-            if (files.length > 0) {
-                uploadFiles(files, selectedCollection);
-            }
-        });
-        
-        console.log('✅ Événements configurés');
-    }
-    
-    // Scanner toutes les images
     async function scanImages() {
-        console.log('🔍 Scan des images...');
+        if (isMobile) showMobileLoader();
         showNotification('Scan en cours...', 'info');
         
         try {
             const response = await fetch(`${API_URL}/api/scan`);
             const data = await response.json();
             
-            // Sauvegarder les données
             allCollections = data.collections;
-            
-            // Mettre à jour les stats
             document.getElementById('total-images').textContent = data.stats.total_images;
             document.getElementById('collections-count').textContent = data.stats.collections_count;
             
-            // Afficher les collections
             displayCollections(allCollections);
-            
-            showNotification(`${data.stats.total_images} images trouvées`, 'success');
-            console.log('📊 Scan réussi:', data);
+            showNotification(`${data.stats.total_images} images`, 'success');
             
         } catch (error) {
-            showNotification('❌ Erreur lors du scan', 'error');
-            console.error('❌ Scan échoué:', error);
+            showNotification('❌ Erreur scan', 'error');
+        } finally {
+            if (isMobile) hideMobileLoader();
         }
     }
     
-    // Afficher les collections
     function displayCollections(collections) {
         const container = document.getElementById('collectionsContainer');
-        
-        // Vérifier s'il y a des images
         const totalImages = Object.values(collections).reduce((sum, col) => sum + col.count, 0);
         
         if (totalImages === 0) {
             container.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-image"></i>
-                    <p>Aucune image n'a été uploadée</p>
-                    <p style="font-size: 0.9rem; margin-top: 10px;">Commencez par uploader des images ci-dessus</p>
+                    <p>Aucune image uploadée</p>
+                    <p style="font-size: clamp(0.8rem, 2.5vw, 0.9rem); margin-top: 8px;">
+                        Commencez par uploader des images
+                    </p>
                 </div>
             `;
             return;
         }
         
         let html = '<div class="collections-grid">';
-        
-        // Titres des collections en français
-        const collectionTitles = {
+        const titles = {
             'hero': 'Image Principale',
             'costumes': 'Costumes sur Mesure',
             'chemises': 'Chemises sur Mesure',
@@ -529,25 +1090,24 @@
             'accessoires': 'Accessoires Masculins'
         };
         
-        // Afficher Hero en premier
-        if (collections.hero && collections.hero.images.length > 0) {
-            html += createCollectionCard('hero', collections.hero, collectionTitles.hero);
+        // Hero en premier
+        if (collections.hero?.images?.length > 0) {
+            html += createCollectionCard('hero', collections.hero, titles.hero);
         }
         
-        // Afficher les autres collections
+        // Autres collections
         Object.entries(collections).forEach(([key, collection]) => {
-            if (key === 'hero') return;
-            
-            if (collection.images && collection.images.length > 0) {
-                html += createCollectionCard(key, collection, collectionTitles[key] || collection.title);
-            }
+            if (key === 'hero' || !collection.images?.length) return;
+            html += createCollectionCard(key, collection, titles[key]);
         });
         
         html += '</div>';
         container.innerHTML = html;
+        
+        // Ajouter les événements de suppression
+        setupDeleteListeners();
     }
     
-    // Créer une carte de collection
     function createCollectionCard(key, collection, title) {
         return `
             <div class="collection-card">
@@ -555,91 +1115,138 @@
                     <div class="collection-title">
                         <i class="fas fa-folder"></i> ${title}
                     </div>
-                    <div class="collection-count">${collection.count} image${collection.count !== 1 ? 's' : ''}</div>
+                    <div class="collection-count">${collection.count}</div>
                 </div>
                 
                 <div class="collection-images">
-                    ${collection.images.map(image => `
-                        <div class="image-item" data-collection="${key}" data-filename="${image.filename}">
-                            <img src="${API_URL}${image.url}" 
+                    ${collection.images.map(img => `
+                        <div class="image-item" data-collection="${key}" data-filename="${img.filename}">
+                            <img src="${API_URL}${img.url}" 
                                  class="image-preview" 
-                                 alt="${image.filename}"
-                                 onerror="this.src='https://via.placeholder.com/50x50/2d3047/d4af37?text=IMG'">
+                                 alt="${img.filename}"
+                                 onerror="this.src='https://via.placeholder.com/60x60/2d3047/d4af37?text=IMG'">
                             <div class="image-info">
-                                <div class="image-name" title="${image.filename}">${image.filename}</div>
-                                <div class="image-size">${formatFileSize(image.size)}</div>
+                                <div class="image-name" title="${img.filename}">${img.filename}</div>
+                                <div class="image-size">${formatFileSize(img.size)}</div>
                             </div>
                             <div style="display: flex; gap: 5px;">
-                                <button class="btn btn-danger btn-sm" onclick="deleteImage('${key}', '${image.filename}')" title="Supprimer">
+                                <button class="btn btn-danger btn-sm" 
+                                        onclick="deleteImage('${key}', '${img.filename}')" 
+                                        title="Supprimer">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                                <button class="btn btn-primary btn-sm" onclick="viewImage('${API_URL}${image.url}')" title="Voir en grand">
-                                    <i class="fas fa-expand"></i>
+                                <button class="btn btn-primary btn-sm" 
+                                        onclick="viewImage('${API_URL}${img.url}')" 
+                                        title="Voir">
+                                    <i class="fas fa-eye"></i>
                                 </button>
                             </div>
                         </div>
                     `).join('')}
                 </div>
                 
-                <div style="padding: 12px 15px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
-                    <button class="btn btn-primary" onclick="selectCollectionForUpload('${key}')" style="width: 100%;">
-                        <i class="fas fa-plus"></i> Ajouter des images
+                <div style="padding: 12px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                    <button class="btn btn-primary" 
+                            onclick="selectCollectionForUpload('${key}')" 
+                            style="width: 100%;">
+                        <i class="fas fa-plus"></i> Ajouter
                     </button>
                 </div>
             </div>
         `;
     }
     
-    // Sélectionner une collection pour upload
+    function setupDeleteListeners() {
+        // Ajouter des événements de tap long pour mobile
+        if (isMobile) {
+            document.querySelectorAll('.image-item').forEach(item => {
+                let pressTimer;
+                
+                item.addEventListener('touchstart', function(e) {
+                    pressTimer = setTimeout(() => {
+                        showImageOptions(this);
+                    }, 800);
+                });
+                
+                item.addEventListener('touchend', function() {
+                    clearTimeout(pressTimer);
+                });
+                
+                item.addEventListener('touchmove', function() {
+                    clearTimeout(pressTimer);
+                });
+            });
+        }
+    }
+    
+    function showImageOptions(element) {
+        const collection = element.dataset.collection;
+        const filename = element.dataset.filename;
+        
+        if (navigator.vibrate) navigator.vibrate(50);
+        
+        const options = `
+            Que voulez-vous faire avec "${filename}" ?
+            
+            1. Supprimer l'image
+            2. Voir en grand
+            3. Annuler
+        `;
+        
+        if (confirm(options)) {
+            deleteImage(collection, filename);
+        } else {
+            viewImage(`${API_URL}/uploads/${collection}/${filename}`);
+        }
+    }
+    
     function selectCollectionForUpload(collection) {
         selectedCollection = collection;
-        
-        // Mettre à jour l'affichage du sélecteur
-        document.querySelectorAll('.collection-option').forEach(option => {
-            option.classList.remove('active');
-            if (option.dataset.collection === collection) {
-                option.classList.add('active');
+        document.querySelectorAll('.collection-option').forEach(opt => {
+            opt.classList.remove('active');
+            if (opt.dataset.collection === collection) {
+                opt.classList.add('active');
             }
         });
         
-        // Faire défiler jusqu'à la zone d'upload
-        document.getElementById('uploadZone').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('uploadZone').scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+        });
         
-        // Activer le champ de fichier
         setTimeout(() => {
-            document.getElementById('fileInput').click();
+            if (isMobile) {
+                document.getElementById('fileInput').click();
+            } else {
+                showNotification(`Prêt à uploader dans ${collection}`, 'info');
+            }
         }, 300);
-        
-        showNotification(`Collection ${collection} sélectionnée`, 'info');
     }
     
-    // Uploader des fichiers
     async function uploadFiles(files, collection) {
-        console.log(`📤 Upload de ${files.length} fichier(s) vers ${collection}`);
         showNotification(`Upload de ${files.length} image(s)...`, 'info');
         
-        let uploadedCount = 0;
-        let failedCount = 0;
+        let uploaded = 0;
+        let failed = 0;
         
         for (const file of files) {
-            const success = await uploadSingleFile(file, collection);
-            if (success) uploadedCount++;
-            else failedCount++;
+            if (await uploadSingleFile(file, collection)) uploaded++;
+            else failed++;
+            
+            // Pause sur mobile pour éviter le blocage
+            if (isMobile) await new Promise(r => setTimeout(r, 100));
         }
         
-        // Scanner les images après upload
         setTimeout(scanImages, 1000);
         
-        // Résumé
-        if (uploadedCount > 0) {
-            showNotification(`${uploadedCount} image(s) uploadée(s) avec succès`, 'success');
+        if (uploaded > 0) {
+            showNotification(`${uploaded} uploadé(s) ✓`, 'success');
         }
-        if (failedCount > 0) {
-            showNotification(`${failedCount} image(s) ont échoué`, 'error');
+        if (failed > 0) {
+            showNotification(`${failed} échoué(s) ✗`, 'error');
         }
     }
     
-    // Uploader un seul fichier
     async function uploadSingleFile(file, collection) {
         const formData = new FormData();
         formData.append('file', file);
@@ -651,136 +1258,84 @@
                 body: formData
             });
             
-            const result = await response.json();
-            
-            if (response.ok) {
-                console.log('✅ Upload réussi:', result);
-                return true;
-            } else {
-                showNotification(`❌ ${file.name}: ${result.error || 'Erreur'}`, 'error');
-                console.error('❌ Upload échoué:', result);
-                return false;
-            }
-        } catch (error) {
-            showNotification(`❌ ${file.name}: Erreur réseau`, 'error');
-            console.error('❌ Erreur réseau:', error);
+            return response.ok;
+        } catch {
             return false;
         }
     }
     
-    // Supprimer une image
     async function deleteImage(collection, filename) {
-        if (!confirm(`Supprimer l'image "${filename}" de la collection ${collection} ?`)) {
-            return;
-        }
+        if (!confirm(`Supprimer "${filename}" ?`)) return;
+        
+        if (isMobile && navigator.vibrate) navigator.vibrate(100);
         
         try {
             const response = await fetch(`${API_URL}/api/delete`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    collection: collection,
-                    filename: filename
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ collection, filename })
             });
             
-            const result = await response.json();
-            
             if (response.ok) {
-                showNotification(`Image "${filename}" supprimée`, 'success');
-                console.log('✅ Suppression réussie:', result);
-                
-                // Mettre à jour l'affichage
+                showNotification('Image supprimée', 'success');
                 setTimeout(scanImages, 500);
             } else {
-                showNotification(`❌ Erreur: ${result.error}`, 'error');
-                console.error('❌ Suppression échouée:', result);
+                showNotification('Erreur suppression', 'error');
             }
-        } catch (error) {
-            showNotification('❌ Erreur de connexion au serveur', 'error');
-            console.error('❌ Erreur réseau:', error);
+        } catch {
+            showNotification('Erreur connexion', 'error');
         }
     }
     
-    // Supprimer toutes les images
     async function clearAllImages() {
-        if (!confirm('⚠️ ATTENTION !\n\nVoulez-vous vraiment supprimer TOUTES les images ?\n\nCette action est irréversible et supprimera toutes les images de toutes les collections.')) {
-            return;
-        }
+        const msg = isMobile ? 
+            'SUPPRIMER TOUTES LES IMAGES ?\n\n⚠️ Action irréversible !' :
+            '⚠️ ATTENTION !\n\nVoulez-vous vraiment supprimer TOUTES les images ?\n\nCette action est irréversible.';
+        
+        if (!confirm(msg)) return;
         
         showNotification('Suppression en cours...', 'warning');
         
         try {
-            // Récupérer toutes les images
             const response = await fetch(`${API_URL}/api/scan`);
             const data = await response.json();
             
-            let deletedCount = 0;
-            let errorCount = 0;
-            
-            // Supprimer chaque image
-            for (const [collectionName, collection] of Object.entries(data.collections)) {
-                for (const image of collection.images) {
-                    try {
-                        const deleteResponse = await fetch(`${API_URL}/api/delete`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                collection: collectionName,
-                                filename: image.filename
-                            })
-                        });
-                        
-                        if (deleteResponse.ok) {
-                            deletedCount++;
-                        } else {
-                            errorCount++;
-                        }
-                    } catch (error) {
-                        errorCount++;
-                    }
+            let deleted = 0;
+            for (const [collection, colData] of Object.entries(data.collections)) {
+                for (const image of colData.images) {
+                    await fetch(`${API_URL}/api/delete`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            collection: collection,
+                            filename: image.filename
+                        })
+                    });
+                    deleted++;
+                    
+                    // Pause sur mobile
+                    if (isMobile) await new Promise(r => setTimeout(r, 50));
                 }
             }
             
-            // Mettre à jour l'affichage
             setTimeout(scanImages, 1000);
+            showNotification(`${deleted} image(s) supprimée(s)`, 'success');
             
-            // Résumé
-            if (deletedCount > 0) {
-                showNotification(`${deletedCount} image(s) supprimée(s)`, 'success');
-            }
-            if (errorCount > 0) {
-                showNotification(`${errorCount} erreur(s) lors de la suppression`, 'error');
-            }
-            
-        } catch (error) {
-            showNotification('❌ Erreur lors de la suppression', 'error');
-            console.error('❌ Erreur:', error);
+        } catch {
+            showNotification('Erreur suppression', 'error');
         }
     }
     
-    // Voir une image en grand
-    function viewImage(url) {
-        window.open(url, '_blank');
-    }
-    
-    // Générer JSON
     async function generateJSON() {
-        console.log('📄 Génération du JSON...');
-        showNotification('Génération du JSON...', 'info');
+        showNotification('Génération JSON...', 'info');
         
         try {
             const response = await fetch(`${API_URL}/api/generate-json`);
             
-            if (!response.ok) throw new Error('Erreur génération');
+            if (!response.ok) throw new Error();
             
-            // Télécharger le fichier
             const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = 'rayschic-images.json';
@@ -788,36 +1343,37 @@
             a.click();
             document.body.removeChild(a);
             
-            showNotification('✅ JSON généré et téléchargé', 'success');
+            showNotification('JSON téléchargé ✓', 'success');
             
-            // Instructions
-            alert(`✅ Fichier rayschic-images.json généré !
+            alert(`✅ JSON généré !
 
-📁 Pour mettre à jour votre site GitHub :
-
-1. Allez sur : https://github.com/rayschic-couture/rayschic-couture.github.io
-2. Cliquez sur "Add file" → "Upload files"
-3. Glissez le fichier téléchargé
-4. Cliquez sur "Commit changes"
-
-Votre site se mettra à jour automatiquement !`);
+📱 Sur mobile :
+1. Ouvrez GitHub dans votre navigateur
+2. Allez dans votre dépôt
+3. Uploadez le fichier téléchargé`);
             
-        } catch (error) {
-            showNotification(`❌ Erreur: ${error.message}`, 'error');
-            console.error('❌ Génération JSON échouée:', error);
+        } catch {
+            showNotification('Erreur génération', 'error');
         }
     }
     
-    // Formater la taille des fichiers
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    function viewImage(url) {
+        if (isMobile) {
+            // Ouvrir dans un nouvel onglet adapté mobile
+            window.open(url, '_blank', 'location=yes');
+        } else {
+            window.open(url, '_blank');
+        }
     }
     
-    // Afficher une notification
+    function formatFileSize(bytes) {
+        if (!bytes) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
+    }
+    
     function showNotification(message, type = 'info') {
         const area = document.getElementById('notificationArea');
         const notification = document.createElement('div');
@@ -836,16 +1392,25 @@ Votre site se mettra à jour automatiquement !`);
         
         area.appendChild(notification);
         
-        // Supprimer après 5 secondes
         setTimeout(() => {
-            if (notification.parentElement) {
-                notification.remove();
-            }
-        }, 5000);
+            if (notification.parentElement) notification.remove();
+        }, isMobile ? 3000 : 5000);
+        
+        // Feedback haptique sur mobile
+        if (isMobile && navigator.vibrate) {
+            if (type === 'error') navigator.vibrate([100, 50, 100]);
+            else if (type === 'success') navigator.vibrate(50);
+        }
     }
     
-    // Test direct
-    console.log('✅ Script JavaScript chargé avec succès');
+    // Détection d'orientation
+    window.addEventListener('orientationchange', function() {
+        setTimeout(() => {
+            showNotification(`Mode ${screen.orientation.type.includes('landscape') ? 'paysage' : 'portrait'}`, 'info');
+        }, 300);
+    });
+    
+    console.log('✅ Admin Responsive prêt !');
     </script>
 </body>
 </html>
