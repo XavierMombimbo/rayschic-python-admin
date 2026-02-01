@@ -4,23 +4,27 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from datetime import datetime
-import hashlib
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from dotenv import load_dotenv
+
+# Charger les variables d'environnement
+load_dotenv()
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 CORS(app)
 
+# ========== CONFIGURATION CLOUDINARY ==========
+cloudinary.config(
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME', 'dvjgsq4zl'),
+    api_key=os.getenv('CLOUDINARY_API_KEY', '514262723866384'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET', '9BIyeJyzZHYPDaH26lFxwYDb5dc'),
+    secure=True
+)
+
 # Configuration
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
-
-# Créer les dossiers s'ils n'existent pas
 COLLECTIONS = ['hero', 'costumes', 'chemises', 'pantalons', 'vestes', 'tenues', 'accessoires']
-for collection in COLLECTIONS:
-    os.makedirs(os.path.join(UPLOAD_FOLDER, collection), exist_ok=True)
 
 # Titres des collections
 COLLECTION_TITLES = {
@@ -33,64 +37,124 @@ COLLECTION_TITLES = {
     'accessoires': 'Accessoires Masculins'
 }
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+# ========== CRÉER UN COMPTE CLOUDINARY GRATUIT ==========
+"""
+ÉTAPES POUR CLOUDINARY (GRATUIT) :
+1. Allez sur https://cloudinary.com
+2. Créez un compte gratuit
+3. Dans le Dashboard, notez :
+   - Cloud Name
+   - API Key
+   - API Secret
+4. Sur Render, ajoutez ces variables d'environnement
+"""
 
-def scan_uploads():
-    """Scanner tous les dossiers d'upload"""
-    collections = {}
+# ========== FONCTIONS CLOUDINARY ==========
+
+def upload_to_cloudinary(file, collection, public_id=None):
+    """Upload une image vers Cloudinary"""
+    try:
+        # Déterminer le public_id
+        if not public_id:
+            name = secure_filename(file.filename)
+            public_id = f"rayschic/{collection}/{os.path.splitext(name)[0]}"
+        
+        # Upload vers Cloudinary
+        result = cloudinary.uploader.upload(
+            file,
+            folder=f"rayschic/{collection}",
+            public_id=public_id,
+            overwrite=True,
+            resource_type="auto"
+        )
+        
+        return {
+            'success': True,
+            'url': result['secure_url'],
+            'public_id': result['public_id'],
+            'filename': file.filename,
+            'size': result.get('bytes', 0),
+            'format': result.get('format', ''),
+            'dimensions': f"{result.get('width', 0)}x{result.get('height', 0)}"
+        }
+    except Exception as e:
+        print(f"Erreur Cloudinary upload: {e}")
+        return {'success': False, 'error': str(e)}
+
+def delete_from_cloudinary(public_id):
+    """Supprime une image de Cloudinary"""
+    try:
+        result = cloudinary.uploader.destroy(public_id)
+        return {'success': True, 'result': result}
+    except Exception as e:
+        print(f"Erreur Cloudinary delete: {e}")
+        return {'success': False, 'error': str(e)}
+
+def list_cloudinary_images():
+    """Liste toutes les images de Cloudinary"""
+    collections_data = {}
     total_images = 0
     
     for collection in COLLECTIONS:
-        collection_path = os.path.join(UPLOAD_FOLDER, collection)
-        images = []
-        
-        if os.path.exists(collection_path):
-            for filename in os.listdir(collection_path):
-                if allowed_file(filename):
-                    filepath = os.path.join(collection_path, filename)
-                    if os.path.isfile(filepath):
-                        try:
-                            size = os.path.getsize(filepath)
-                            images.append({
-                                'filename': filename,
-                                'url': f'/uploads/{collection}/{filename}',
-                                'size': size,
-                                'uploaded_at': datetime.fromtimestamp(os.path.getctime(filepath)).isoformat()
-                            })
-                        except:
-                            continue
-        
-        collections[collection] = {
-            'title': COLLECTION_TITLES.get(collection, collection),
-            'images': images,
-            'count': len(images)
-        }
-        total_images += len(images)
+        try:
+            # Rechercher les images dans le dossier
+            result = cloudinary.api.resources(
+                type="upload",
+                prefix=f"rayschic/{collection}/",
+                max_results=100
+            )
+            
+            images = []
+            for resource in result.get('resources', []):
+                images.append({
+                    'filename': os.path.basename(resource['public_id']),
+                    'url': resource['secure_url'],
+                    'size': resource.get('bytes', 0),
+                    'public_id': resource['public_id'],
+                    'dimensions': f"{resource.get('width', 0)}x{resource.get('height', 0)}",
+                    'format': resource.get('format', ''),
+                    'uploaded_at': resource.get('created_at', '')
+                })
+            
+            collections_data[collection] = {
+                'title': COLLECTION_TITLES.get(collection, collection),
+                'images': images,
+                'count': len(images)
+            }
+            total_images += len(images)
+            
+        except Exception as e:
+            print(f"Erreur listing {collection}: {e}")
+            collections_data[collection] = {
+                'title': COLLECTION_TITLES.get(collection, collection),
+                'images': [],
+                'count': 0
+            }
     
     return {
-        'collections': collections,
+        'collections': collections_data,
         'stats': {
             'total_images': total_images,
-            'collections_count': len(collections),
+            'collections_count': len(collections_data),
             'last_updated': datetime.now().isoformat()
         }
     }
 
+# ========== ROUTES API ==========
+
 @app.route('/api/scan', methods=['GET'])
 def api_scan():
-    """API: Scanner toutes les images"""
+    """API: Scanner toutes les images depuis Cloudinary"""
     try:
-        data = scan_uploads()
+        data = list_cloudinary_images()
         return jsonify(data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/upload', methods=['POST'])
 def api_upload():
-    """API: Uploader une image"""
+    """API: Uploader une image vers Cloudinary"""
     try:
-        # Vérifier si les champs sont présents
         if 'file' not in request.files:
             return jsonify({'error': 'Aucun fichier fourni'}), 400
         
@@ -100,59 +164,36 @@ def api_upload():
         file = request.files['file']
         collection = request.form['collection']
         
-        # Vérifier la collection
         if collection not in COLLECTIONS:
-            return jsonify({'error': f'Collection invalide. Options: {", ".join(COLLECTIONS)}'}), 400
+            return jsonify({'error': f'Collection invalide: {collection}'}), 400
         
-        # Vérifier le fichier
         if file.filename == '':
             return jsonify({'error': 'Nom de fichier vide'}), 400
         
-        if not allowed_file(file.filename):
-            return jsonify({'error': f'Type de fichier non autorisé. Types autorisés: {", ".join(ALLOWED_EXTENSIONS)}'}), 400
+        # Upload vers Cloudinary
+        result = upload_to_cloudinary(file, collection)
         
-        # Sécuriser le nom de fichier
-        original_filename = secure_filename(file.filename)
-        filename = original_filename
-        
-        # Vérifier si le fichier existe déjà, ajouter un suffixe si nécessaire
-        counter = 1
-        name, ext = os.path.splitext(original_filename)
-        upload_path = os.path.join(app.config['UPLOAD_FOLDER'], collection)
-        
-        while os.path.exists(os.path.join(upload_path, filename)):
-            filename = f"{name}_{counter}{ext}"
-            counter += 1
-        
-        # Sauvegarder le fichier
-        file_path = os.path.join(upload_path, filename)
-        file.save(file_path)
-        
-        # Obtenir les informations du fichier
-        size = os.path.getsize(file_path)
-        
-        # Réponse
-        image_data = {
-            'filename': filename,
-            'url': f'/uploads/{collection}/{filename}',
-            'size': size,
-            'uploaded_at': datetime.now().isoformat(),
-            'collection': collection
-        }
-        
-        return jsonify({
-            'success': True,
-            'message': 'Fichier uploadé avec succès',
-            'image': image_data
-        })
-        
+        if result['success']:
+            return jsonify({
+                'success': True,
+                'message': 'Image uploadée avec succès',
+                'image': {
+                    'filename': result['filename'],
+                    'url': result['url'],
+                    'size': result['size'],
+                    'collection': collection,
+                    'public_id': result['public_id']
+                }
+            })
+        else:
+            return jsonify({'error': result['error']}), 500
+            
     except Exception as e:
-        print(f"Upload error: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/delete', methods=['POST'])
 def api_delete():
-    """API: Supprimer une image"""
+    """API: Supprimer une image de Cloudinary"""
     try:
         data = request.get_json()
         
@@ -165,37 +206,29 @@ def api_delete():
         if not collection or not filename:
             return jsonify({'error': 'Collection et nom de fichier requis'}), 400
         
-        # Vérifier la collection
-        if collection not in COLLECTIONS:
-            return jsonify({'error': 'Collection invalide'}), 400
+        # Construire le public_id
+        name = secure_filename(filename)
+        public_id = f"rayschic/{collection}/{os.path.splitext(name)[0]}"
         
-        # Sécuriser le nom de fichier
-        safe_filename = secure_filename(filename)
+        # Supprimer de Cloudinary
+        result = delete_from_cloudinary(public_id)
         
-        # Chemin du fichier
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], collection, safe_filename)
-        
-        # Vérifier si le fichier existe
-        if not os.path.exists(file_path):
-            return jsonify({'error': 'Fichier non trouvé'}), 404
-        
-        # Supprimer le fichier
-        os.remove(file_path)
-        
-        return jsonify({
-            'success': True,
-            'message': 'Fichier supprimé avec succès'
-        })
-        
+        if result['success']:
+            return jsonify({
+                'success': True,
+                'message': 'Image supprimée avec succès'
+            })
+        else:
+            return jsonify({'error': result['error']}), 500
+            
     except Exception as e:
-        print(f"Delete error: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/generate-json', methods=['GET'])
 def api_generate_json():
     """API: Générer le JSON pour GitHub"""
     try:
-        data = scan_uploads()
+        data = list_cloudinary_images()
         
         # Formater pour GitHub
         github_data = {
@@ -216,10 +249,9 @@ def api_generate_json():
                 'count': collection['count']
             }
         
-        # Créer la réponse
+        # Téléchargement
         response = jsonify(github_data)
-        response.headers.add('Content-Disposition', 'attachment; filename=images.json')
-        
+        response.headers.add('Content-Disposition', 'attachment; filename=rayschic-images.json')
         return response
         
     except Exception as e:
@@ -227,53 +259,43 @@ def api_generate_json():
 
 @app.route('/api/health', methods=['GET'])
 def api_health():
-    """API: Vérifier la santé du serveur"""
+    """API: Vérifier la santé"""
     return jsonify({
         'status': 'online',
-        'timestamp': datetime.now().isoformat(),
-        'collections': COLLECTIONS,
-        'upload_folder': UPLOAD_FOLDER
+        'storage': 'cloudinary',
+        'timestamp': datetime.now().isoformat()
     })
 
-@app.route('/api/clear-cache', methods=['POST'])
-def api_clear_cache():
-    """API: Nettoyer le cache (placeholder)"""
-    return jsonify({
-        'success': True,
-        'message': 'Cache nettoyé (fonctionnalité de placeholder)'
-    })
+@app.route('/api/test-cloudinary', methods=['GET'])
+def test_cloudinary():
+    """Tester la connexion Cloudinary"""
+    try:
+        # Tester avec une requête simple
+        result = cloudinary.api.ping()
+        return jsonify({
+            'success': True,
+            'cloudinary': 'connected',
+            'response': result
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'cloudinary': 'disconnected',
+            'error': str(e)
+        }), 500
 
-@app.route('/api/optimize', methods=['POST'])
-def api_optimize():
-    """API: Optimiser les images (placeholder)"""
-    return jsonify({
-        'success': True,
-        'message': 'Optimisation (fonctionnalité de placeholder)',
-        'optimized': 0
-    })
-
-# Servir les fichiers uploadés
-@app.route('/uploads/<collection>/<filename>')
-def serve_uploaded_file(collection, filename):
-    return send_from_directory(os.path.join(UPLOAD_FOLDER, collection), filename)
-
-# Route pour l'admin
-@app.route('/admin')
-def serve_admin():
-    return send_from_directory('static', 'admin.html')
-
-# Route racine
 @app.route('/')
 def index():
     return jsonify({
-        'name': 'Rayschic Image Admin API',
-        'version': '1.0.0',
+        'name': 'Rayschic Cloudinary API',
+        'version': '2.0.0',
+        'storage': 'Cloudinary (Permanent)',
         'endpoints': {
-            '/api/scan': 'GET - Scanner les images',
-            '/api/upload': 'POST - Uploader une image',
-            '/api/delete': 'POST - Supprimer une image',
-            '/api/generate-json': 'GET - Générer JSON pour GitHub',
-            '/api/health': 'GET - Vérifier la santé du serveur'
+            '/api/scan': 'GET - Scanner images Cloudinary',
+            '/api/upload': 'POST - Uploader vers Cloudinary',
+            '/api/delete': 'POST - Supprimer de Cloudinary',
+            '/api/generate-json': 'GET - Générer JSON GitHub',
+            '/api/test-cloudinary': 'GET - Tester Cloudinary'
         }
     })
 
